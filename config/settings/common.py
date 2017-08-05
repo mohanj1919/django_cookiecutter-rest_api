@@ -25,31 +25,23 @@ DJANGO_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Useful template tags:
-    # 'django.contrib.humanize',
-
-    # Admin
-    'django.contrib.admin',
 )
 
 THIRD_PARTY_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
-    'allauth',  # registration
-    'allauth.account',  # registration
-    'rest_auth',  # registration
     'rest_framework_swagger',
+    'corsheaders',
+    'pyotp',
 )
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
     # custom users app
     'src.users',
-    # Your stuff: custom apps go here
+    'src.patients',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -60,6 +52,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -67,16 +60,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-# MIGRATIONS CONFIGURATION
-# ------------------------------------------------------------------------------
-MIGRATION_MODULES = {
-    'sites': 'src.contrib.sites.migrations'
-}
-
 # DEBUG
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = env.bool('DJANGO_DEBUG', False)
+DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -87,25 +74,18 @@ FIXTURE_DIRS = (
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
+                    default='django.core.mail.backends.smtp.EmailBackend')
 
-# MANAGER CONFIGURATION
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = (
-    ("""mohankumar""", 'mohankumar1919@gmail.com'),
-)
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
-MANAGERS = ADMINS
 
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-    'default': env.db('DATABASE_URL', default='postgres:///apps'),
-}
+DATABASES = {}
+DATABASES['default'] = env.db(
+    'DATABASE_URL',
+    default='postgres://curation:mysecretpass@localhost:5432/curation'
+)
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 
@@ -177,9 +157,9 @@ STATIC_ROOT = str(ROOT_DIR('staticfiles'))
 STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
-STATICFILES_DIRS = (
-    str(APPS_DIR.path('static')),
-)
+# STATICFILES_DIRS = (
+#     str(APPS_DIR.path('static')),
+# )
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = (
@@ -206,7 +186,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 # Some really nice defaults
@@ -217,22 +196,109 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 # SLUGLIFIER
 # AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
 
-
-
-
-# Location of root django.contrib.admin URL, use {% url 'admin:index' %}
-ADMIN_URL = r'^admin/'
-
-
 # DJANGO REST FRAMEWORK
 # ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'src.utilities.pagination.CustomPagination',
+    'PAGE_SIZE': 10
 }
 
-# Your common stuff: Below this line define 3rd party library settings
+# logging configuration
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': env('DJANGO_LOG_LEVEL', default='DEBUG'),
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': env('DJANGO_LOG_LEVEL', default='ERROR'),
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': env('DJANGO_LOG_LEVEL', default='INFO'),
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'src.users': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'src.patients': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        }
+    }
+}
+
+CORS_ORIGIN_ALLOW_ALL = env('CORS_ORIGIN_ALLOW_ALL', default=True)
+CORS_ORIGIN_WHITELIST = env('CORS_ORIGIN_WHITELIST', default='*')
+
+ALLOWED_HOSTS = ['*']
+
+PWD_EXPIRY_CYCLE_DAYS = env.int('PWD_EXPIRY_CYCLE_DAYS', default=90)
+
+AUTH_USER_MODEL = "users.CurationUser"
+DEFAULT_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test')
+
+
+UI_SERVER = env('UI_SERVER', default='localhost:3000')
+SET_PASSWORD_URL = 'http://' + UI_SERVER + '/resetpassword/'
+
+LOGIN_URL = 'http://' + UI_SERVER + '/login/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Host for sending e-mail.
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+
+# Port for sending e-mail.
+EMAIL_PORT = env('EMAIL_PORT', default=25)
+
+# Optional SMTP authentication information for EMAIL_HOST.
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
+
+SUPPORT_EMAIL_ADDRESS = env('SUPPORT_EMAIL_ADDRESS')
+STRING_MAX_DEFAULT_LENGTH = 100
+
+WELCOME_MAIL_SUBJECT = env('WELCOME_MAIL_SUBJECT', default='OM1 welcome mail')
+RESET_PASSWORD_MAIL_SUBJECT = env('RESET_PASSWORD_MAIL_SUBJECT', default='Reset Password for OM1')
+
+PROVIDER_NAME = env('PROVIDER_NAME', default="OM1")
+
+DJANGO_AWS_ACCESS_KEY_ID = env('DJANGO_AWS_ACCESS_KEY_ID', default='access_key')
+DJANGO_AWS_SECRET_ACCESS_KEY = env('DJANGO_AWS_SECRET_ACCESS_KEY', default='secret_key')
+DJANGO_AWS_REGION = env('DJANGO_AWS_REGION', default='region')

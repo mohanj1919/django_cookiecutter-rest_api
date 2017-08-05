@@ -14,11 +14,13 @@ services:
       - postgres_backup:/backups
     env_file: .env
 
-  django:
+  app:
+    image: curation:latest
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile
     user: django
+    env_file: .env
     volumes:
       - /usr/src/app/
       - /usr/src/app/static
@@ -26,19 +28,8 @@ services:
       - postgres
       - redis
     command: /gunicorn.sh
-    env_file: .env
-
-  nginx:
-    build: ./compose/nginx
-    depends_on:
-      - django
-    volumes:
-      - /www/static
-    volumes_from:
-      - django
     ports:
-      - "0.0.0.0:80:80"
-
+      - "8000:5000"
 
   redis:
     image: redis:latest

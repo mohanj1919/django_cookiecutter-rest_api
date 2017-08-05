@@ -1,0 +1,1081 @@
+swagger: '2.0'
+info:
+  description: >-
+    Clinical API
+  version: 1.0.0
+  title: Clinical API
+host: profiled_1:8002
+
+tags:
+  - name: auth
+    description: Everything about token authorization
+  - name: appointment
+    description: Everything about a patient's appointments
+  - name: encounter
+    description: Everything about a patient's encounters
+  - name: event
+    description: Everything about a patient's clinical events
+  - name: user
+    description: Everything about user management
+
+schemes:
+  - https
+
+paths:
+  /api-token-auth/:
+    post:
+      tags:
+        - auth
+      operationId: getToken
+      parameters:
+        - in: body
+          name: authTokenRequest
+          description: Credentials to obtain an auth token
+          schema:
+            $ref: "#/definitions/AuthTokenRequest"
+      responses:
+        200:
+          description: successful operation
+          schema:
+              $ref: "#/definitions/AuthTokenResponse"
+
+  /cohorts/:
+    post:
+      tags:
+        - cohort
+      summary: Add a new cohort
+      operationId: addCohort
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: description
+          description: A name or description for this cohort
+          schema:
+            type: string
+      responses:
+        201:
+          description: successful operation
+        405:
+          description: invalid input
+    get:
+      tags:
+        - cohort
+      summary: Get all cohorts
+      operationId: getCohorts
+      consumes:
+        - application/json
+      produces:
+        - appliaction/json
+      responses:
+        200:
+          description: successful operation
+
+  /cohorts/{cohort_id}:
+    get:
+      tags:
+        - cohort
+      summary: Get the patients in a cohort
+      operationId: getCohort
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cohort_id
+          description: The ID of the cohort
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+    put:
+      tags:
+        - cohort
+      summary: Update a cohort
+      operationId: updateCohort
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cohort_id
+          description: The ID of the cohort
+          required: true
+          type: string
+      responses:
+        201:
+          description: succesful operation
+        405:
+          description: invalid input
+    
+    delete:
+      tags:
+        - cohort
+      summary: Delete a cohort
+      operationId: deleteCohort
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cohort_id
+          description: The ID of the cohort
+          required: true
+          type: string
+      responses:
+        201:
+          description: succesful operation
+        405:
+          description: invalid input
+
+
+  /cohorts/{cohort_id}/patients/:
+    post:
+      tags:
+        - patients
+      summary: Add a new patient to a cohort
+      operationId: addPatient
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cohort_id
+          description: the cohort
+          required: true
+          type: string
+        - in: body
+          name: patient
+          description: A patient object with clinical records
+          schema:
+            $ref: "#/definitions/Patient"
+      responses:
+        201:
+          description: successful operation
+        405:
+          description: Invalid input
+    get:
+      tags:
+        - patients
+      summary: Get all patients in a cohort
+      operationId: getPatients
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cohort_id
+          description: the cohort
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+  /cohorts/{cohort_id}/patients/{patient_id}/:
+    get:
+      tags:
+        - patients
+      summary: Get all patients in a cohort
+      operationId: getPatient
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cohort_id
+          description: the cohort
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: the patient id
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+    put:
+      tags:
+        - patients
+      summary: Update a patient in a cohort
+      operationId: updatePatient
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cohort_id
+          description: the cohort id
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: the patient id
+          required: true
+          type: string
+        - in: body
+          name: encounters
+          description: Encounters that need to be added
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Patient"
+      responses:
+        201:
+          description: successful operation
+        405:
+          description: Invalid input
+    delete:
+      tags:
+        - patients
+      summary: Delete a patient in a cohort
+      operationId: deletePatient
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cohort_id
+          description: The ID of the cohort
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: the patient id
+          required: true
+          type: string
+      responses:
+        201:
+          description: succesful operation
+        405:
+          description: invalid input
+
+  /users/:
+    post:
+      tags:
+        - user
+      summary: Add a new user (curator/admin)
+      operationId: addUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          description: User details to create
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: successful operation
+        405:
+          description: invalid input
+    get:
+      tags:
+        - user
+      summary: Get all users
+      operationId: getusers
+      consumes:
+        - application/json
+      produces:
+        - appliaction/json
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+        
+  /users/{user_id}:
+    get:
+      tags:
+        - user
+      summary: Get the user details
+      operationId: getUser
+      consumes:
+        - application/json
+      produces:
+        - appliaction/json
+      parameters:
+        - in: path
+          name: user_id
+          description: The ID of the user
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+    put:
+      tags:
+        - user
+      summary: Update user details
+      operationId: updateUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: user_id
+          description: the user id
+          required: true
+          type: string
+        - in: body
+          name: user
+          description: User details to be updated
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: successful operation
+        405:
+          description: Invalid input
+    delete:
+      tags:
+        - user
+      summary: Delete a user
+      operationId: deleteUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: user_id
+          description: The ID of the user
+          required: true
+          type: string
+      responses:
+        201:
+          description: succesful operation
+        405:
+          description: invalid input
+
+
+definitions:
+  AuthTokenRequest:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+
+  AuthTokenResponse:
+    type: object
+    properties:
+      token:
+        type: string
+
+  Role:
+    type: object
+    description: user role details
+    properties:
+      name: 
+        type: string
+        description: role name
+      id: 
+        type: integer
+        description: role id
+    example:
+      id: 1, 
+      name: "curator"
+
+  User:
+    type: object
+    description: User details
+    required: [email, first_name, role_id]
+    properties:
+      id: 
+        type: integer
+        description: user id
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      role_id:
+        type: integer
+        description: A reference to Roles
+        $ref: "#/definitions/Role"
+    
+    example:
+      email: "test@test.com"
+      first_name: "John"
+      last_name: "Wick"
+      role_id: {
+        "id": 1, 
+        "name": "curator"
+      }
+
+
+  Cohort:
+    type: object
+    description: A cohort of patients for curators to review
+    required: [description]
+    properties:
+      description:
+        type: string
+      patients:
+        type: array
+        items:
+          $ref: "#/definitions/Patient"
+        
+
+  Patient:
+    type: object
+    description: A patient
+    required: [patient_id]
+    properties:
+      patient_id:
+        type: string
+      address_state:
+        type: string
+      DECEASED_INDICATOR:
+        type: string
+      EMPLOYMENT_STATUS:
+        type: string
+      ETHNICITY:
+        type: string
+      LANGUAGE:
+        type: string
+      LIVING_SITUATION_STATUS:
+        type: string
+      MARITAL_STATUS:
+        type: string
+      PCP_ID:
+        type: string
+      RACE:
+        type: string
+      SEX:
+        type: string
+      YEAR_OF_BIRTH:
+        type: string
+      YEAR_OF_DEATH:
+        type: string
+      ZIP_3:
+        type: string
+      encounters:
+        type: array
+        items:
+          $ref: "#/definitions/Encounter"
+
+
+  Encounter:
+    type: object
+    description: A patient encounter
+    properties:
+      id:
+        type: string
+        description: A reference to this diagnosis
+      ADMISSION_DTTM:
+        type: string
+        description: ADMISSION_DTTM
+      ADMITTING_PHYSICIAN_ID:
+        type: string
+        description: ADMITTING_PHYSICIAN_ID
+      ARRIVAL_DTTM:
+        type: string
+        description: ARRIVAL_DTTM
+      ATTENDING_PHYSICIAN_ID:
+        type: string
+        description: ATTENDING_PHYSICIAN_ID
+      BILLING_PROVIDER_ID:
+        type: string
+        description: BILLING_PROVIDER_ID
+      CLAIM_STATEMENT_FROM_DTTM:
+        type: string
+        description: CLAIM_STATEMENT_FROM_DTTM
+        format: date-time
+      CLAIM_STATEMENT_TO_DTTM:
+        type: string
+        description: CLAIM_STATEMENT_TO_DTTM
+        format: date-time
+      DISCHARGE_DISPOSITION:
+        type: string
+        description: DISCHARGE_DISPOSITION
+      DISCHARGE_DTTM:
+        type: string
+        description: DISCHARGE_DTTM
+        format: date-time
+      DOCUMENTING_PROVIDER_ID:
+        type: string
+        description: DOCUMENTING_PROVIDER_ID
+      DTTM:
+        type: string
+        description: DTTM
+      LOCATION:
+        type: string
+        description: LOCATION
+      PLACE_OF_SERVICE:
+        type: string
+        description: PLACE_OF_SERVICE
+      RENDERING_PROVIDER_ID:
+        type: string
+        description: RENDERING_PROVIDER_ID
+      TYPE:
+        type: string
+        description: TYPE
+      TYPE_OF_BILL:
+        type: string
+        description: TYPE_OF_BILL
+      diagnoses:
+        type: array
+        items:
+          $ref: "#/definitions/Diagnosis"
+      insurances:
+        type: array
+      joint_exams:
+        type: array
+      medication_records:
+        type: array
+      notes:
+        type: array
+      observations:
+        type: array
+        items:
+          $ref: "#/definitions/Observation"
+      procedures:
+        type: array
+        items:
+          $ref: "#/definitions/Procedure"
+      providers:
+        type: array
+      questionnaires:
+        type: array
+      results:
+        type: array
+
+  Diagnosis:
+    type: object
+    required: [code, code_type]
+    properties:
+      id:
+        type: string
+        description: A reference to this diagnosis
+      code:
+        type: string
+      code_type:
+        type: string
+      name:
+        type: string
+      CATEGORY:
+        type: string
+        description: CATEGORY
+      DOCUMENTING_PROVIDER_ID:
+        type: string
+        description: DOCUMENTING_PROVIDER_ID
+      STATUS:
+        type: string
+        description: STATUS
+      PL_FLAG:
+        type: string
+        description: PL_FLAG
+      ONSET_DTTM:
+        type: string
+        description: ONSET_DTTM
+      RESOLUTION_DTTM:
+        type: string
+        description: RESOLUTION_DTTM
+      PRINCIPAL_DX_FLAG:
+        type: string
+        description: PRINCIPAL_DX_FLAG
+      ADMITTING_DX_FLAG:
+        type: string
+        description: ADMITTING_DX_FLAG
+      DISCHARGE_DX_FLAG:
+        type: string
+        description: DISCHARGE_DX_FLAG
+      PRESENT_ON_ADMISSION:
+        type: string
+        description: PRESENT_ON_ADMISSION
+    example:
+      code: "E11.311"
+      code_type: "ICD-10-CM"
+      name: "Type 2 diabetes mellitus with unspecified diabetic retinopathy with macular edema"
+
+  Insurance:
+    type: object
+    properties:
+      BENEFIT_CODE:
+        type: string
+        description: BENEFIT_CODE
+      BENEFIT_NAME:
+        type: string
+        description: BENEFIT_NAME
+      FINANCIAL_CLASS_CODE:
+        type: string
+        description: FINANCIAL_CLASS_CODE
+      FINANCIAL_CLASS_NAME:
+        type: string
+        description: FINANCIAL_CLASS_NAME
+      COMPANY_CODE:
+        type: string
+        description: COMPANY_CODE
+      COMPANY_NAME:
+        type: string
+        description: COMPANY_NAME
+      PLAN_CODE:
+        type: string
+        description: PLAN_CODE
+      PLAN_NAME:
+        type: string
+        description: PLAN_NAME
+
+  JointExam:
+    type: object
+    properties:
+      PERFORMING_PROVIDER_ID:
+        type: string
+        description: PERFORMING_PROVIDER_ID
+      DOCUMENTING_PROVIDER_ID:
+        type: string
+        description: DOCUMENTING_PROVIDER_ID
+      ESR:
+        type: string
+        description: ESR
+      STATUS:
+        type: string
+        description: STATUS
+      TOTAL_NORMAL_28_JOINT_COUNT:
+        type: string
+        description: TOTAL_NORMAL_28_JOINT_COUNT
+      TOTAL_SWOLLEN_28_JOINT_COUNT:
+        type: string
+        description: TOTAL_SWOLLEN_28_JOINT_COUNT
+      TOTAL_TENDER_28_JOINT_COUNT:
+        type: string
+        description: TOTAL_TENDER_28_JOINT_COUNT
+      TOTAL_NORMAL_76_JOINT_COUNT:
+        type: string
+        description: TOTAL_NORMAL_76_JOINT_COUNT
+      TOTAL_SWOLLEN_76_JOINT_COUNT:
+        type: string
+        description: TOTAL_SWOLLEN_76_JOINT_COUNT
+      TOTAL_TENDER_76_JOINT_COUNT:
+        type: string
+        description: TOTAL_TENDER_76_JOINT_COUNT
+
+  MedicationRecord:
+    type: object
+    properties:
+      MEDICATION_RECORD_TYPE:
+        type: string
+        description: MEDICATION_RECORD_TYPE (administration, order, patient_reported)
+      ACTION:
+        type: string
+        description: ACTION
+      ADMINISTERING_PROVIDER_ID:
+        type: string
+        description: ADMINISTERING_PROVIDER_ID
+      CODE:
+        type: string
+        description: CODE
+      DAW_FLAG:
+        type: string
+        description: DAW_FLAG
+      DAYS_SUPPLY:
+        type: string
+        description: DAYS_SUPPLY
+      DAYS_SUPPLY_DERIVED:
+        type: string
+        description: DAYS_SUPPLY_DERIVED
+      DISCONTINUE_FLAG:
+        type: string
+        description: DISCONTINUE_FLAG
+      DISPENSE_QUANTITY:
+        type: string
+        description: DISPENSE_QUANTITY
+      DOCUMENTING_PROVIDER_ID:
+        type: string
+        description: DOCUMENTING_PROVIDER_ID
+      DOCUMENTING_PROV_ID:
+        type: string
+        description: DOCUMENTING_PROV_ID
+      DOSES_PER_DAY:
+        type: string
+        description: DOSES_PER_DAY
+      DOSES_PER_DAY_DERIVED:
+        type: string
+        description: DOSES_PER_DAY_DERIVED
+      END_DTTM:
+        type: string
+        description: END_DTTM
+      EXPIRE_DTTM:
+        type: string
+        description: EXPIRE_DTTM
+      FORM:
+        type: string
+        description: FORM
+      FREQUENCY:
+        type: string
+        description: FREQUENCY
+      GPI:
+        type: string
+        description: GPI
+      INFUSION_DOSE:
+        type: string
+        description: INFUSION_DOSE
+      INFUSION_END_DTTM:
+        type: string
+        description: INFUSION_END_DTTM
+      INFUSION_EXPIRY_1_DTTM:
+        type: string
+        description: INFUSION_EXPIRY_1_DTTM
+      INFUSION_EXPIRY_2_DTTM:
+        type: string
+        description: INFUSION_EXPIRY_2_DTTM
+      INFUSION_EXPIRY_3_DTTM:
+        type: string
+        description: INFUSION_EXPIRY_3_DTTM
+      INFUSION_EXPIRY_4_DTTM:
+        type: string
+        description: INFUSION_EXPIRY_4_DTTM
+      INFUSION_FLAG:
+        type: string
+        description: INFUSION_FLAG
+      INFUSION_PATIENT_WEIGHT:
+        type: string
+        description: INFUSION_PATIENT_WEIGHT
+      INFUSION_PATIENT_WEIGHT_UNIT:
+        type: string
+        description: INFUSION_PATIENT_WEIGHT_UNIT
+      INFUSION_PLANNED_DOSE:
+        type: string
+        description: INFUSION_PLANNED_DOSE
+      INFUSION_PLANNED_DOSE_UNIT:
+        type: string
+        description: INFUSION_PLANNED_DOSE_UNIT
+      INFUSION_RATE:
+        type: string
+        description: INFUSION_RATE
+      INFUSION_RATE_UNIT:
+        type: string
+        description: INFUSION_RATE_UNIT
+      INFUSION_REASON_FOR_ADJUSTMENT:
+        type: string
+        description: INFUSION_REASON_FOR_ADJUSTMENT
+      INFUSION_START_DTTM:
+        type: string
+        description: INFUSION_START_DTTM
+      INFUSION_THERAPY_TYPE:
+        type: string
+        description: INFUSION_THERAPY_TYPE
+      INFUSION_VOLUME_INFUSED:
+        type: string
+        description: INFUSION_VOLUME_INFUSED
+      INFUSION_VOLUME_INFUSED_UNIT:
+        type: string
+        description: INFUSION_VOLUME_INFUSED_UNIT
+      NAME:
+        type: string
+        description: NAME
+      NDC:
+        type: string
+        description: NDC
+      OR_DISPENSE:
+        type: string
+        description: OR_DISPENSE
+      PHARMACY_FILL_NUMBER:
+        type: string
+        description: PHARMACY_FILL_NUMBER
+      PHARMACY_PRESCRIPTION_ID:
+        type: string
+        description: PHARMACY_PRESCRIPTION_ID
+      PRESCRIBING_PROVIDER_ID:
+        type: string
+        description: PRESCRIBING_PROVIDER_ID
+      PRESCRIPTION_FILL_NUMBER:
+        type: string
+        description: PRESCRIPTION_FILL_NUMBER
+      REASON_FOR_DISCONTINUATION:
+        type: string
+        description: REASON_FOR_DISCONTINUATION
+      REASON_FOR_START:
+        type: string
+        description: REASON_FOR_START
+      REFILLS_AUTHORIZED:
+        type: string
+        description: REFILLS_AUTHORIZED
+      REFILLS_AUTHORIZED_NUMERIC:
+        type: string
+        description: REFILLS_AUTHORIZED_NUMERIC
+      ROUTE_OF_ADMIN:
+        type: string
+        description: ROUTE_OF_ADMIN
+      RXNORM:
+        type: string
+        description: RXNORM
+      SIG:
+        type: string
+        description: SIG
+      START_DTTM:
+        type: string
+        description: START_DTTM
+      STATUS:
+        type: string
+        description: STATUS
+      STRENGTH:
+        type: string
+        description: STRENGTH
+      TOTAL_DOSE:
+        type: string
+        description: TOTAL_DOSE
+      TYPE:
+        type: string
+        description: TYPE
+      UNIT:
+        type: string
+        description: UNIT
+
+  Note:
+    type: object
+    properties:
+      NAME:
+        type: string
+        description: NAME
+      DOCUMENTING_PROVIDER_ID:
+        type: string
+        description: DOCUMENTING_PROVIDER_ID
+      TEXT:
+        type: string
+        description: TEXT
+
+  Observation:
+    type: object
+    required: [code, value, units]
+    properties:
+      id:
+        type: string
+        description: A reference to this observation
+      code:
+        description: >
+          Code describing the type of observation.
+          Observations codes generally depend on the data source
+          and the only standardized code type may be SNOMED, but we treat this as
+          if it depends on the data source
+        type: string
+      name:
+        description: "Optional text description of this type of observation"
+        type: string
+      value:
+        description: "The measurement recorded for this observation"
+        type: string
+      units:
+        description: "The units of measurement for the observation"
+        type: string
+      DOCUMENTING_PROV_ID:
+        type: string
+        description: DOCUMENTING_PROV_ID
+      STATUS:
+        type: string
+        description: STATUS
+
+    example:
+      code: "3141-9"
+      name: "Patient Body Weight - Measured"
+      value: "86"
+      units: "kg"
+
+  Procedure:
+    type: object
+    required: [code, code_type]
+    properties:
+      id:
+        type: string
+        description: A reference to this procedure
+      anatomic_location:
+        type: string
+      code:
+        type: string
+      code_type:
+        type: string
+      name:
+        type: string
+      BILLING_PROVIDER_ID:
+        type: string
+      DOCUMENTING_PROVIDER_ID:
+        type: string
+      ORDERING_PROVIDER_ID:
+        type: string
+      PERFORMING_PROVIDER_ID:
+        type: string
+      PRINCIPAL_PROCEDURE_FLAG:
+        type: string
+      QUANTITY:
+        type: string
+      RESULTS:
+        type: string
+      REV_CODE (useful for inpatient):
+        type: string
+      STATUS:
+        type: string
+    example:
+      code: "92941"
+      code_type: "CPT"
+      name: "Revascularization of acute total/subtotal occlusion during acute myocardial infarction"
+
+  Provider:
+    type: object
+    properties:
+      DEPARTMENT_LOCAL:
+        type: string
+        description: DEPARTMENT_LOCAL
+      DEPARTMENT_MAPPED:
+        type: string
+        description: DEPARTMENT_MAPPED
+      NPI:
+        type: string
+        description: NPI
+      SPECIALTY_CODE_LOCAL:
+        type: string
+        description: SPECIALTY_CODE_LOCAL
+      SPECIALTY_CODE_MAPPED:
+        type: string
+        description: SPECIALTY_CODE_MAPPED
+      SPECIALTY_IS_PRIMARY_FLAG:
+        type: string
+        description: SPECIALTY_IS_PRIMARY_FLAG
+      SPECIALTY_SEQUENCE_NUMBER:
+        type: string
+        description: SPECIALTY_SEQUENCE_NUMBER
+      STATUS_LOCAL:
+        type: string
+        description: STATUS_LOCAL
+      STATUS_MAPPED:
+        type: string
+        description: STATUS_MAPPED
+      TYPE_LOCAL:
+        type: string
+        description: TYPE_LOCAL
+      TYPE_MAPPED:
+        type: string
+        description: TYPE_MAPPED
+      ZIP_CODE:
+        type: string
+        description: ZIP_CODE
+
+  Questionnaire:
+    type: object
+    properties:
+      CATEGORY:
+        type: string
+        description: CATEGORY
+      CODE:
+        type: string
+        description: CODE
+      DOCUMENTING_PROVIDER_ID:
+        type: string
+        description: DOCUMENTING_PROVIDER_ID
+      NAME:
+        type: string
+        description: NAME
+      RESULT:
+        type: string
+        description: RESULT
+      RESULT_UNIT:
+        type: string
+        description: RESULT_UNIT
+      SUBCATEGORY:
+        type: string
+        description: SUBCATEGORY
+      STATUS:
+        type: string
+        description: STATUS
+      TYPE:
+        type: string
+        description: TYPE
+
+  Result:
+    type: object
+    properties:
+      STATUS:
+        type: string
+        description: STATUS
+      ORDER_ID:
+        type: string
+        description: ORDER_ID
+      ORDER_CODE:
+        type: string
+        description: ORDER_CODE
+      PANEL_CODE:
+        type: string
+        description: PANEL_CODE
+      PANEL_NAME:
+        type: string
+        description: PANEL_NAME
+      CODE:
+        type: string
+        description: CODE
+      NAME:
+        type: string
+        description: NAME
+      VALUE:
+        type: string
+        description: VALUE
+      UNIT:
+        type: string
+        description: UNIT
+      REFERENCE_RANGE:
+        type: string
+        description: REFERENCE_RANGE
+      LOINC:
+        type: string
+        description: LOINC (description would be desired)
+      PERFORMED_DTTM:
+        type: string
+        description: PERFORMED_DTTM
+      PERFORMING_PROVIDER_ID:
+        type: string
+        description: PERFORMING_PROVIDER_ID
+      DOCUMENTING_PROVIDER_ID:
+        type: string
+        description: DOCUMENTING_PROVIDER_ID
+      MICROBIO_ORGANISM:
+        type: string
+        description: MICROBIO_ORGANISM
+      MICROBIO_ANTIBIOTIC:
+        type: string
+        description: MICROBIO_ANTIBIOTIC
+      MICROBIO_SENSITIVITY:
+        type: string
+        description: MICROBIO_SENSITIVITY
+      MICROBIO_MIC:
+        type: string
+        description: MICROBIO_MIC
+      ABNORMAL_FLAG:
+        type: string
+        description: ABNORMAL_FLAG
+      SPECIMEN_SOURCE:
+        type: string
+        description: SPECIMEN_SOURCE
+      REFERENCE_RANGE_LOWER:
+        type: string
+        description: REFERENCE_RANGE_LOWER
+      REFERENCE_RANGE_UPPER:
+        type: string
+        description: REFERENCE_RANGE_UPPER
+
+securityDefinitions:
+  Token:
+    type: apiKey
+    name: Authorization
+    in: header
+
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'

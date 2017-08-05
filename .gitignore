@@ -22,6 +22,7 @@ sftp-config.json
 # Basics
 *.py[cod]
 __pycache__
+*.pyc
 
 # Logs
 *.log
@@ -47,12 +48,6 @@ htmlcov
 *.swp
 *.swo
 
-# npm
-node_modules/
-
-# Compass
-.sass-cache
-
 # virtual environments
 .env
 
@@ -61,4 +56,3 @@ apps/media/
 
 # Hitch directory
 tests/.hitch
-

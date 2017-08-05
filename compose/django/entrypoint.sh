@@ -11,6 +11,26 @@ if [ -z "$POSTGRES_USER" ]; then
     export POSTGRES_USER=postgres
 fi
 
-export DATABASE_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_USER
 
+# Sleep when asked to, to allow the database time to start
+# before OM1 tries to run /checkdb.py below.
+sleep 10
+
+# Setup database automatically if needed
+if [ $SKIP_DB_STATUS_CHECK -eq 0 ]; then
+  echo "Running database check"
+  python /usr/src/app/checkdb.py
+  DB_CHECK_STATUS=$?
+  echo "DB_CHECK_STATUS"
+  echo $DB_CHECK_STATUS
+
+  if [ $DB_CHECK_STATUS -eq 1 ]; then
+    echo "Failed to connect to database server or database does not exist."
+    exit 1
+  elif [ $DB_CHECK_STATUS -eq 0 ]; then
+    echo "Configuring initial database"
+    python manage.py makemigrations --noinput
+    python manage.py migrate --noinput
+  fi
+fi
 exec "$@"

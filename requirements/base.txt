@@ -2,11 +2,8 @@
 django==1.10.6
 djangorestframework==3.6.2
 Markdown==2.6.6
-django-rest-auth==0.8.1
 
 django-rest-swagger==2.1.2
-
-dj-static
 
 
 coreapi==2.3.0
@@ -23,11 +20,6 @@ django-model-utils==2.5
 # Images
 Pillow==3.3.0
 
-# For user registration, either via email or social
-# Well-built with regular release cycles!
-django-allauth==0.26.1
-
-
 # Python-PostgreSQL Database Adapter
 psycopg2==2.6.2
 
@@ -43,9 +35,13 @@ pytz==2016.6.1
 # redis>=2.10.0
 
 
-
-
-
-
-
 # Your custom requirements go here
+
+django-cors-headers==2.1.0
+
+# 2-factor auth
+pyotp==2.2.6
+
+django-choices==1.6.0
+
+boto3==1.4.4

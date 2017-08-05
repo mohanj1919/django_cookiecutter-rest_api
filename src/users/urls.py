@@ -1,10 +1,13 @@
-from django.conf.urls import url
-from rest_framework.urlpatterns import format_suffix_patterns
-from . import views
+
+from django.conf.urls import url, include
+from ..utilities.router import get_router
+
+from .views import authView, userView
+
+router = get_router()
+router.register(r'users', userView.UserViewSet, 'users')
+router.register(r'auth', authView.AuthViewSet, 'auth')
 
 urlpatterns = [
-    url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
+    url(r'^', include(router.urls)),
 ]
-
-urlpatterns = format_suffix_patterns(urlpatterns)

@@ -1,10 +1,12 @@
 [run]
-include = apps/*
+include = src/*
 omit =
   *apps.py,
   *migrations/*,
-  *settings*,
-  *tests/*,
+  *settings/*,
   *urls.py,
   *wsgi.py,
-  manage.py
+  manage.py,
+  */__init__*,
+  *model*,
+  *router*

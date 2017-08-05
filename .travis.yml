@@ -1,12 +1,94 @@
-sudo: true
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq build-essential gettext python-dev zlib1g-dev libpq-dev xvfb
-  - sudo apt-get install -qq libtiff4-dev libjpeg8-dev libfreetype6-dev liblcms1-dev libwebp-dev
-  - sudo apt-get install -qq graphviz-dev python-setuptools python3-dev python-virtualenv python-pip
-  - sudo apt-get install -qq firefox automake libtool libreadline6 libreadline6-dev libreadline-dev
-  - sudo apt-get install -qq libsqlite3-dev libxml2 libxml2-dev libssl-dev libbz2-dev wget curl llvm
 language: python
 python:
-- "3.5"
+  - 3.5.2
 
+services:
+  - docker
+
+# Limit builds on topic branches to PR instead of every push
+# https://blog.travis-ci.com/2012-08-13-build-workflow-around-pull-requests/
+branches:
+  only:
+    - master
+    - staging
+    - production
+
+env:
+  global:
+    - COMPOSE_IMAGE=curation_api
+    - AWS_DEFAULT_REGION=us-east-1
+    - AWS_ACCOUNT=231938700547
+    - ECS_IMAGE=231938700547.dkr.ecr.us-east-1.amazonaws.com/om1-curation
+    - DOCKER_AWS_ENV="-e AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY"
+    - PREFIX=curation-master-
+    - APP=api
+    - REV_DATE=$(date +%Y%m%d%H%M%S)
+    - REV="${REV_DATE}-${TRAVIS_COMMIT::7}"
+    - ECR_REGISTRY_HOST=${AWS_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+    - ECR_REPO_NAME=om1-curation
+    - ECS_IMAGE=${ECR_REGISTRY_HOST}/${ECR_REPO_NAME}
+    - ECS_CLUSTER=om1-staging
+    - ECS_SERVICE=${PREFIX}${APP}
+    - CACHE_TAG=cache_$BRANCH
+
+before_install:
+  # debug env
+  - env | sort
+
+  # Use a newer docker-compose
+  # - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > /tmp/docker-compose
+  # - chmod +x /tmp/docker-compose
+  # - sudo mv -f /tmp/docker-compose /usr/local/bin/docker-compose
+
+  # Using docker pull to get docker image layer cache will only work for docker < v1.10
+  # hopefully something else will be available before travis upgrades
+  # https://github.com/docker/docker/issues/20316#issuecomment-206640001
+  - docker version
+  - docker-compose version
+
+  # Set AWS credential env vars to be those of the ops-deployer role for the current account
+  - eval $(docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-assume-role $AWS_ACCOUNT OM1-Group)
+
+  # docker login into the ECR repo for the current account so that we can pull/push to it
+  - eval $(docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws ecr get-login)
+
+  # Pull the most recent image to make the build quicker
+  - docker pull $ECS_IMAGE:$CACHE_TAG || docker pull $ECS_IMAGE:latest || true
+
+install:
+  # Build with docker-compose
+  - docker-compose build
+
+script:
+  # Run tests with docker-compose
+  - |
+    # fail fast
+    set -e
+    docker-compose run app /run_tests.sh
+
+after_success:
+  - |
+    # fail fast
+    set -e
+    set -x
+
+    # Only do push/deploy/clean if on a trigger branch
+    if [[ $BRANCH =~ master ]]; then
+      echo "Performing deploy for branch $BRANCH"
+
+      # Tag docker-compose built image with ECR repo+tags and push them
+      docker tag $COMPOSE_IMAGE $ECS_IMAGE:latest && docker push $ECS_IMAGE:latest
+      docker tag $COMPOSE_IMAGE $ECS_IMAGE:${REV} && docker push $ECS_IMAGE:${REV}
+
+      # Trigger ECS deploy against the image pushed above
+      docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecs-deploy ${ECS_CLUSTER} ${ECS_SERVICE} $ECS_IMAGE:${REV}
+
+      # Clean up old images
+      docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecr-clean ${ECR_REPO_NAME} 100
+    else
+      echo "No deploy for branch $BRANCH"
+    fi
+
+after_script:
+  # save cache of docker image to make subsequent runs faster
+  - docker tag $COMPOSE_IMAGE $ECS_IMAGE:$CACHE_TAG && docker push $ECS_IMAGE:$CACHE_TAG
