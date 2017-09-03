@@ -1,0 +1,20 @@
+ [
+        {
+            "Email": "lohith.dhanakonda@ggktech.com",
+            "First Name": "lohith",
+            "Last Name": "dhanakonda",
+            "MFA type": "Google",
+            "Mobile number": "-",
+            "Status": "Active",
+            "Role":"admin"
+        },
+        {
+            "Email": "test1+1504018620743@ggktech.com",
+            "First Name": "Test",
+            "Last Name": "Account",
+            "MFA type": "Google",
+            "Mobile number": "+1906389286",
+            "Status": "In Active",
+            "Role":"admin"
+        }
+    ]

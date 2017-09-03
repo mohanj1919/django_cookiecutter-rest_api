@@ -1,0 +1,25 @@
+.patients-search-table{
+    .patients-actions{
+        overflow: inherit !important;
+    }
+}
+
+.react-bs-container-body {
+    overflow: initial;
+}
+
+.download-att{
+    button{
+        color: #000;
+        height: 35px;
+        min-width: 13px;
+        width: 53px;
+    }
+    ul{
+        min-width: initial;
+        width: 55px;
+        a{
+            padding-left: 8px;
+        }
+    }
+}

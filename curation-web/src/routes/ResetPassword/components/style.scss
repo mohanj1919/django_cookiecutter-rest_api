@@ -1,0 +1,28 @@
+.log-in-well{
+    border: 1px solid #bbb;
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.5);
+    overflow: visible;
+}
+
+.unauth-layout {
+    height: 100%;
+    >div {
+        height: 100%;
+    }
+}
+
+.header-login{
+    height: 100%;
+    background: url('../../../../public/assets/images/background_cover.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.always-show-reset-form{
+    margin-left: 100% !important;
+    width: 100%;
+    top: 22px;
+}
+.download-app-help{
+    text-align: left;
+}

@@ -9,36 +9,39 @@ services:
 # https://blog.travis-ci.com/2012-08-13-build-workflow-around-pull-requests/
 branches:
   only:
-    - master
-    - staging
+    - development
+    - deiddev
     - production
+    - jd/travis_integration
 
 env:
   global:
-    - COMPOSE_IMAGE=curation_api
     - AWS_DEFAULT_REGION=us-east-1
-    - AWS_ACCOUNT=231938700547
-    - ECS_IMAGE=231938700547.dkr.ecr.us-east-1.amazonaws.com/om1-curation
-    - DOCKER_AWS_ENV="-e AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY"
-    - PREFIX=curation-master-
-    - APP=api
+    - APP=curation
+    - COMPOSE_IMAGE=curation
+    - DOCKER_AWS_ENV="-e AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_SESSION_TOKEN -e AWS_SESSION_EXPIRATION"
+    - DOCKER_AWS_ENV_DEPLOY_USER="-e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e                    AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN -e AWS_SESSION_EXPIRATION=$AWS_SESSION_EXPIRATION"
+    - AWS_ACCOUNT=$(if [ "$BRANCH" == "production" ]; then echo 674566313132; elif [ "$BRANCH" == "deidprod" ]; then echo 130860143866; elif [ "$BRANCH" == "staging" ]; then echo 357801675085; elif [ "$BRANCH" == "deidstage" ]; then echo 125233914917; elif [ "$BRANCH" == "dev" ]; then echo 982829624023; elif [ "$BRANCH" == "development" ] ; then echo 687159894535; fi)
+    - DEVOPS_ENV=$(if [ "$BRANCH" == "production" ]; then echo production; elif [ "$BRANCH" == "deidprod" ]; then echo deidprod; elif [ "$BRANCH" == "staging" ]; then echo staging; elif [ "$BRANCH" == "deidstage" ]; then echo deidstage; elif [ "$BRANCH" == "dev" ]; then echo dev; elif [ "$BRANCH" == "development" ]; then echo deiddev; fi)
+    - PREFIX=boc-${DEVOPS_ENV}-
     - REV_DATE=$(date +%Y%m%d%H%M%S)
     - REV="${REV_DATE}-${TRAVIS_COMMIT::7}"
     - ECR_REGISTRY_HOST=${AWS_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
-    - ECR_REPO_NAME=om1-curation
+    - ECR_REPO_NAME=${PREFIX}${APP}
     - ECS_IMAGE=${ECR_REGISTRY_HOST}/${ECR_REPO_NAME}
-    - ECS_CLUSTER=om1-staging
+    - ECS_CLUSTER=${PREFIX}main
     - ECS_SERVICE=${PREFIX}${APP}
+    - ECS_TASK=${PREFIX}${APP}
     - CACHE_TAG=cache_$BRANCH
+    - DOCKER_COMPOSE_VERSION=1.5.2
 
 before_install:
   # debug env
   - env | sort
-
   # Use a newer docker-compose
-  # - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > /tmp/docker-compose
-  # - chmod +x /tmp/docker-compose
-  # - sudo mv -f /tmp/docker-compose /usr/local/bin/docker-compose
+  #- curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > /tmp/docker-compose
+  #- chmod +x /tmp/docker-compose
+  #- sudo mv -f /tmp/docker-compose /usr/local/bin/docker-compose
 
   # Using docker pull to get docker image layer cache will only work for docker < v1.10
   # hopefully something else will be available before travis upgrades
@@ -47,7 +50,7 @@ before_install:
   - docker-compose version
 
   # Set AWS credential env vars to be those of the ops-deployer role for the current account
-  - eval $(docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-assume-role $AWS_ACCOUNT OM1-Group)
+  - eval $(docker run ${DOCKER_AWS_ENV_DEPLOY_USER} betteroutcomes/aws-ecs-deploy aws-assume-role $AWS_ACCOUNT ops-deployer)
 
   # docker login into the ECR repo for the current account so that we can pull/push to it
   - eval $(docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws ecr get-login)
@@ -56,39 +59,60 @@ before_install:
   - docker pull $ECS_IMAGE:$CACHE_TAG || docker pull $ECS_IMAGE:latest || true
 
 install:
+  - env > .env
+  - cat .env.example >> .env
   # Build with docker-compose
-  - docker-compose build
+  - docker-compose -f docker-compose-travis.yml build
 
 script:
   # Run tests with docker-compose
   - |
     # fail fast
     set -e
-    docker-compose run app /run_tests.sh
+    docker-compose -f docker-compose-travis.yml run app /run_tests.sh
 
 after_success:
   - |
     # fail fast
     set -e
     set -x
-
     # Only do push/deploy/clean if on a trigger branch
-    if [[ $BRANCH =~ master ]]; then
+
+    if [[ $BRANCH =~ development ]]; then
       echo "Performing deploy for branch $BRANCH"
+      eval $(docker run ${DOCKER_AWS_ENV_DEPLOY_USER} betteroutcomes/aws-ecs-deploy aws-assume-role $AWS_ACCOUNT ops-deployer)
 
       # Tag docker-compose built image with ECR repo+tags and push them
       docker tag $COMPOSE_IMAGE $ECS_IMAGE:latest && docker push $ECS_IMAGE:latest
       docker tag $COMPOSE_IMAGE $ECS_IMAGE:${REV} && docker push $ECS_IMAGE:${REV}
 
-      # Trigger ECS deploy against the image pushed above
-      docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecs-deploy ${ECS_CLUSTER} ${ECS_SERVICE} $ECS_IMAGE:${REV}
+      # The ID world and the DEID world handle their use of the schema repository differently.  In the DEID world
+      # schema is a task that migrates the stdstore.  In the ID world, schema is a service that provides an API.
+
+      if [[ $BRANCH =~ deidstage|deiddev|deidprod ]]; then
+          # Trigger ECS task deploy against the image pushed above
+          docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecs-deploy-task ${ECS_TASK} $ECS_IMAGE:${REV}
+
+          # Run the ECS task (migrates stdtore)
+          docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecs-run-task ${ECS_CLUSTER} ${ECS_TASK}
+      elif [[ $BRANCH =~ production|staging|dev ]]; then
+          # Update the ECS service (provides API)
+          docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecs-deploy ${ECS_CLUSTER} ${ECS_SERVICE} $ECS_IMAGE:${REV}
+      fi
 
       # Clean up old images
-      docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecr-clean ${ECR_REPO_NAME} 100
+      docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecr-clean ${ECR_REPO_NAME} 40
+
+      # save cache of docker image to make subsequent runs faster
+      docker tag $COMPOSE_IMAGE $ECS_IMAGE:$CACHE_TAG && docker push $ECS_IMAGE:$CACHE_TAG
+
     else
       echo "No deploy for branch $BRANCH"
     fi
 
+
 after_script:
-  # save cache of docker image to make subsequent runs faster
-  - docker tag $COMPOSE_IMAGE $ECS_IMAGE:$CACHE_TAG && docker push $ECS_IMAGE:$CACHE_TAG
+    - docker-compose run pipeline clean_schemas
+
+notifications:
+  slack: betteroutcomes:UHCKCWnX6yQbwFfcBRl2iYn7

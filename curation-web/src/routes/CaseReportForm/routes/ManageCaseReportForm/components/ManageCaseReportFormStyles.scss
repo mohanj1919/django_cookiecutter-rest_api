@@ -1,0 +1,132 @@
+.file-upload-div{
+    width: 130%!important;
+  
+ .file-name{
+     width: 115%!important;
+     border: none;
+ }
+    p{
+        color: #b9b7b7;
+        text-overflow: hidden;
+
+    }
+}
+
+.drop-zone-div{ 
+    div{
+         height: 100px!important;
+        width: 98%!important;
+        margin-right: 20px!important;
+        text-align: center;
+        padding-top: 4%;
+        }
+    .input-group-btn .btn{
+        border-radius: 4px!important;
+    }
+}
+@media (max-width:1000px){
+    .drop-zone-div div p{
+        display:none;
+        content: 'Upload'
+    }
+}
+.fa.fa-times{
+    color: red;
+    cursor:pointer;
+    padding-right: 20px;
+}
+.upload-file-btn{
+    padding-right: 4px;
+    margin-left: 115%;
+    margin-top: 4px;
+}
+.file-name{
+    margin: 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.required:after { content:" *";color: #a94442; }
+.submit-crf-style{
+        float: right;
+}
+
+  .container-fluid.question-data,
+ .container-fluid.template-data{
+    padding-right: 25px;
+    padding-left: 25px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.add-btn-add-on{
+    background-color: #3e7d90;
+    color: white;
+}
+.add-btn-add-on:hover{
+    background-color: #3e7d90;
+    color: white;
+}
+.add-btn-add-on:focus{
+    background-color: #3e7d90;
+    color: white;
+}
+.add-ques-btn{
+    margin-left: 2%;
+}
+.react-bs-table-sizePerPage-dropdown{
+    padding-left: 10px!important; 
+}
+.react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-4{
+    width: 25%;
+    float: right;
+}
+.react-bs-table-pagination .dropdown .dropdown-menu {
+      top: auto;
+      bottom: 100%;
+      margin-bottom: 8px;
+      min-width: 54px;
+      left: 10px;
+  }
+  .react-bs-table-csv-btn{
+      margin-left: 8px;
+  }
+  .cancel-btn{
+      margin-left: 10px;
+  }
+  .react-bs-table table td, .react-bs-table table th{
+    white-space: initial!important;
+    word-wrap: break-word!important;
+}
+.error{
+    color: #a94442;
+}
+.search-clear-btn{
+        cursor: default!important;
+            padding: 6px 12px!important;
+    font-size: 14px!important;
+    font-weight: 400!important;
+    line-height: 1!important;
+    color: #555!important;
+    text-align: center!important;
+    background-color: #eee!important;
+    border: 1px solid #ccc!important;
+}
+.search-clear-btn:hover{
+        cursor: default!important;
+    }
+
+    .modal-footer{
+        padding: 10px;
+    }
+    .react-bs-container-body textarea{
+        resize: vertical;
+    }
+    .textarea-save-btn{
+        display: none;
+    }
+   .range-response.form-group .input-group .form-control{
+       width:50%;
+   }
+   .file-data{
+       pointer-events: none;
+   }

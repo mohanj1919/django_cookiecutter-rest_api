@@ -1,0 +1,25 @@
+[{
+    "id": 362,
+    "patient_chart_review_id": 18,
+    "crf_template_question_id": 9,
+    "question_id": "9",
+    "responses": "unknown",
+    "is_active": true,
+    "created_on": "2017-08-16T08:56:55.568035Z",
+    "updated_on": "2017-08-16T08:57:03.052108Z",
+    "annotation_text": null,
+    "annotation_responses": null
+},
+{
+    "id": 363,
+    "patient_chart_review_id": 18,
+    "crf_template_question_id": 10,
+    "question_id": "10",
+    "responses": "",
+    "is_active": true,
+    "created_on": "2017-08-16T08:56:56.147453Z",
+    "updated_on": "2017-08-16T08:57:03.054001Z",
+    "annotation_text": null,
+    "annotation_responses": null
+}
+]

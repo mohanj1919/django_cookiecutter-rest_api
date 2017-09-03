@@ -1,0 +1,24 @@
+[
+   {
+		"id": 2,
+		"text": "Test",
+		"note": null,
+		"type": "single",
+		"description": "Desc",
+		"responses": "t",
+		"is_active": true,
+		"created_on": "2017-08-29T14:45:53.419190Z",
+		"updated_on": "2017-08-29T14:45:53.419267Z"
+	},
+	{
+		"id": 5,
+		"text": "Is Patient Diabetic? 1504024090114",
+		"note": null,
+		"type": "single",
+		"description": "Patient with Diabetes",
+		"responses": "Yes,No",
+		"is_active": true,
+		"created_on": "2017-08-29T16:28:28.868622Z",
+		"updated_on": "2017-08-29T16:28:28.868644Z"
+	}
+]

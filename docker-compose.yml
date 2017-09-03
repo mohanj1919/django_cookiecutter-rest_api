@@ -6,18 +6,19 @@ volumes:
 
 services:
   postgres:
-    build: ./compose/postgres
-    ports:
-      - "5432:5432"
+    container_name: curation_postgres_1
+    image: postgres:9.6
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - postgres_backup:/backups
+    ports:
+      - "5432"
     env_file: .env
 
   app:
     image: curation:latest
     build:
-      context: .
+      context: ./curation-api/
       dockerfile: ./compose/django/Dockerfile
     user: django
     env_file: .env
@@ -26,10 +27,8 @@ services:
       - /usr/src/app/static
     depends_on:
       - postgres
-      - redis
     command: /gunicorn.sh
     ports:
-      - "8000:5000"
-
-  redis:
-    image: redis:latest
+      - "80:5000"
+    links:
+      - postgres

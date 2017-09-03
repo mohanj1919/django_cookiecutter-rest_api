@@ -1,0 +1,20 @@
+.required:after { content:" *";color: #a94442; }
+.settings-data-div{
+    margin-top: 2%; 
+    .no-settings-info{
+        text-align: center;
+    }
+    .individual-setting{
+        padding-bottom: 4%;
+    }
+    .btn-set{
+        float: right;
+        .cancel-btn{
+            padding-left: 10px;
+        }
+    }
+        
+}
+.error{
+    color: #a94442;
+}

@@ -1,0 +1,31 @@
+
+.user-roles {
+    text-transform: capitalize;
+    padding-left: 8px;
+}
+
+.users-list {
+    .user-search-field {
+        font-size: 16px;
+        width: 230px;
+    }
+    .grid-controls {
+        span {
+            float: left;
+            margin-right: 10px;
+        }
+    }
+}
+.user-role-grid{
+    text-transform: capitalize;
+}
+.react-phone-number-input{
+    input,button{
+        border: none;
+    }
+    ul{
+        width: 100%!important;
+        margin-left: 2%!important;
+    }
+}
+.required:after { content:" *";color: #a94442; }

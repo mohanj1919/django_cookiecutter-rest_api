@@ -49,10 +49,12 @@ htmlcov
 *.swo
 
 # virtual environments
-.env
+venv/*
 
 # User-uploaded media
 apps/media/
 
 # Hitch directory
 tests/.hitch
+
+.env

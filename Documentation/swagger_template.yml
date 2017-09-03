@@ -1,22 +1,36 @@
 swagger: '2.0'
 info:
-  description: >-
-    Clinical API
-  version: 1.0.0
   title: Clinical API
+  description: >-
+    Clinical API, starting from the base version already in use by the healthcare team in boc-profiled.
+
+    Primarily adding fields for the curation application, and creating a consistent path forward.
+  version: 1.1.1
+
 host: profiled_1:8002
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
 
 tags:
   - name: auth
-    description: Everything about token authorization
-  - name: appointment
-    description: Everything about a patient's appointments
-  - name: encounter
-    description: Everything about a patient's encounters
-  - name: event
-    description: Everything about a patient's clinical events
-  - name: user
-    description: Everything about user management
+    description: "Everything about token authorization"
+  - name: domains
+    description: "Everything about a patient's domain"
+  - name: domains/patients
+    description: "Everything about a patient"
+  - name: domains/patients/appointments
+    description: "Everything about a patient's appointments"
+  - name: domains/patients/events
+    description: "Everything about a patient's clinical events"
+  - name: domains/patients/encounters
+    description: "Everything about a patient's encounters"
+  - name: domains/providers
+    description: "Everything about a provider. TBD: This might go under domain as well."
+
 
 schemes:
   - https
@@ -30,236 +44,759 @@ paths:
       parameters:
         - in: body
           name: authTokenRequest
-          description: Credentials to obtain an auth token
+          description: "Credentials to obtain an auth token"
+          required: true
           schema:
             $ref: "#/definitions/AuthTokenRequest"
       responses:
         200:
-          description: successful operation
+          description: "Successful operation"
           schema:
               $ref: "#/definitions/AuthTokenResponse"
 
-  /cohorts/:
+# Appointments endpoints
+  /clinical/domains/{domain_id}/patients/{patient_id}/appointments/:
     post:
       tags:
-        - cohort
-      summary: Add a new cohort
-      operationId: addCohort
-      consumes:
-        - application/json
-      produces:
-        - application/json
+        - domains/patients/appointments
+      summary: Add a new patient appointment
+      operationId: addAppointment
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The ID of the patient"
+          required: true
+          type: string
+        - in: body
+          name: appointment
+          description: "Appointment that needs to be added"
+          required: true
+          schema:
+            $ref: "#/definitions/Appointment"
+      responses:
+        201:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Appointment"
+        405:
+          description: "Invalid input"
+      security:
+        - Token: []
+
+    get:
+      tags:
+        - domains/patients/appointments
+      summary: List all appointments for a patient
+      operationId: getAppointments
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The ID of the patient"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Appointment"
+      security:
+        - Token: []
+
+  /clinical/domains/{domain_id}/patients/{patient_id}/appointments/{appointment_id}/:
+    get:
+      tags:
+        - domains/patients/appointments
+      summary: Find a patient's appointment by id
+      operationId: getAppointmentById
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The ID of the patient"
+          required: true
+          type: string
+        - in: path
+          name: appointment_id
+          description: "The ID of the appointment to return"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Appointment"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Not found"
+      security:
+        - Token: []
+
+    delete:
+      tags:
+        - domains/patients/appointments
+      summary: Deletes an existing patient appointment
+      operationId: deleteAppointment
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The ID of the patient"
+          required: true
+          type: string
+        - in: path
+          name: appointment_id
+          description: "The ID of the appointment to delete"
+          required: true
+          type: string
+      responses:
+        204:
+          description: "Successful operation"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Not found"
+      security:
+        - Token: []
+
+    put:
+      tags:
+        - domains/patients/appointments
+      summary: Update an existing patient appointment
+      operationId: updateAppointment
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The ID of the patient"
+          required: true
+          type: string
+        - in: path
+          name: appointment_id
+          description: "The ID of the appointment to update"
+          required: true
+          type: string
+        - in: body
+          name: appointment
+          description: "Appointment that needs to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/Appointment"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Appointment"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Not found"
+        405:
+          description: "Validation exception"
+      security:
+        - Token: []
+
+# Domain endpoints
+  /clinical/domains/:
+    get:
+      tags:
+        - domains
+      summary: Get all domains
+      operationId: getDomains
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Domain"
+      security:
+        - Token: []
+
+    post:
+      tags:
+        - domains
+      summary: Add a new domain
+      operationId: addDomain
       parameters:
         - in: body
           name: description
-          description: A name or description for this cohort
+          description: "A name or description for this Domain"
           schema:
             type: string
       responses:
         201:
-          description: successful operation
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Domain"
         405:
-          description: invalid input
-    get:
-      tags:
-        - cohort
-      summary: Get all cohorts
-      operationId: getCohorts
-      consumes:
-        - application/json
-      produces:
-        - appliaction/json
-      responses:
-        200:
-          description: successful operation
+          description: "Invalid input"
+      security:
+        - Token: []
 
-  /cohorts/{cohort_id}:
+  /clinical/domains/{domain_id}/:
     get:
       tags:
-        - cohort
-      summary: Get the patients in a cohort
-      operationId: getCohort
-      consumes:
-        - application/json
-      produces:
-        - application/json
+        - domains
+      summary: Get the information about a domain
+      operationId: getDomain
       parameters:
         - in: path
-          name: cohort_id
-          description: The ID of the cohort
+          name: domain_id
+          description: "The ID of the domain"
           required: true
           type: string
       responses:
         200:
-          description: successful operation
+          description: "Successful operation"
+          schema:
+              $ref: "#/definitions/Domain"
+      security:
+        - Token: []
+
     put:
       tags:
-        - cohort
-      summary: Update a cohort
-      operationId: updateCohort
-      consumes:
-        - application/json
-      produces:
-        - application/json
+        - domains
+      summary: Update a domain
+      operationId: updateDomain
       parameters:
         - in: path
-          name: cohort_id
-          description: The ID of the cohort
+          name: domain_id
+          description: "The ID of the domain"
           required: true
           type: string
       responses:
         201:
-          description: succesful operation
+          description: "Succesful operation"
+          schema:
+            $ref: "#/definitions/Domain"
+
         405:
-          description: invalid input
-    
+          description: "Invalid input"
+      security:
+        - Token: []
+
     delete:
       tags:
-        - cohort
-      summary: Delete a cohort
-      operationId: deleteCohort
-      consumes:
-        - application/json
-      produces:
-        - application/json
+        - domains
+      summary: Delete a domain
+      operationId: deleteDomain
       parameters:
         - in: path
-          name: cohort_id
-          description: The ID of the cohort
+          name: domain_id
+          description: "The ID of the domain"
           required: true
           type: string
       responses:
         201:
-          description: succesful operation
+          description: "Succesful operation"
         405:
-          description: invalid input
+          description: "Invalid input"
+      security:
+        - Token: []
 
-
-  /cohorts/{cohort_id}/patients/:
+# Patient endpoints
+  /clinical/domains/{domain_id}/patients/:
     post:
       tags:
-        - patients
-      summary: Add a new patient to a cohort
+        - domains/patients
+      summary: Add a new patient to a domain
       operationId: addPatient
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - in: path
-          name: cohort_id
-          description: the cohort
+          name: domain_id
+          description: "The domain ID"
           required: true
           type: string
         - in: body
           name: patient
-          description: A patient object with clinical records
+          description: "A patient object with clinical records"
           schema:
             $ref: "#/definitions/Patient"
       responses:
         201:
-          description: successful operation
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Patient"
         405:
-          description: Invalid input
+          description: "Invalid input"
+      security:
+        - Token: []
+
     get:
       tags:
-        - patients
-      summary: Get all patients in a cohort
+        - domains/patients
+      summary: Get all patients in a domain
       operationId: getPatients
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - in: path
-          name: cohort_id
-          description: the cohort
+          name: domain_id
+          description: "The domain ID"
           required: true
           type: string
       responses:
         200:
-          description: successful operation
-  /cohorts/{cohort_id}/patients/{patient_id}/:
+          description: "Successful operation"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Patient"
+      security:
+        - Token: []
+
+  /clinical/domains/{domain_id}/patients/{patient_id}/:
     get:
       tags:
-        - patients
-      summary: Get all patients in a cohort
+        - domains/patients
+      summary: Get information about a patient in the domain
       operationId: getPatient
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - in: path
-          name: cohort_id
-          description: the cohort
+          name: domain_id
+          description: "The domain ID"
           required: true
           type: string
         - in: path
           name: patient_id
-          description: the patient id
+          description: "The patient ID"
           required: true
           type: string
       responses:
         200:
-          description: successful operation
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Patient"
+      security:
+        - Token: []
+
     put:
       tags:
-        - patients
-      summary: Update a patient in a cohort
+        - domains/patients
+      summary: Update a patient in a domain
       operationId: updatePatient
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - in: path
-          name: cohort_id
-          description: the cohort id
+          name: domain_id
+          description: "The domain ID"
           required: true
           type: string
         - in: path
           name: patient_id
-          description: the patient id
+          description: "The patient ID"
           required: true
           type: string
         - in: body
-          name: encounters
-          description: Encounters that need to be added
+          name: patients
+          description: "Patients that need to be added to the domain"
           schema:
             type: array
             items:
               $ref: "#/definitions/Patient"
       responses:
         201:
-          description: successful operation
+          description: "Successful operation"
         405:
-          description: Invalid input
+          description: "Invalid input"
+      security:
+        - Token: []
+
     delete:
       tags:
-        - patients
-      summary: Delete a patient in a cohort
+        - domains/patients
+      summary: Delete a patient in a domain
       operationId: deletePatient
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - in: path
-          name: cohort_id
-          description: The ID of the cohort
+          name: domain_id
+          description: "The domain ID"
           required: true
           type: string
         - in: path
           name: patient_id
-          description: the patient id
+          description: "The patient ID"
           required: true
           type: string
       responses:
         201:
-          description: succesful operation
+          description: "Succesful operation"
         405:
-          description: invalid input
+          description: "Invalid input"
+      security:
+        - Token: []
+
+
+# Encounter endpoints
+  /clinical/domains/{domain_id}/patients/{patient_id}/encounters/:
+    post:
+      tags:
+        - domains/patients/encounters
+      summary: Add a new patient encounter
+      operationId: addEncounter
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The patient ID"
+          required: true
+          type: string
+        - in: body
+          name: encounter
+          description: "The encounter that needs to be added"
+          required: true
+          schema:
+            $ref: "#/definitions/Encounter"
+      responses:
+        201:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Encounter"
+        405:
+          description: "Invalid input"
+      security:
+        - Token: []
+
+    get:
+      tags:
+        - domains/patients/encounters
+      summary: List all encounters for a patient
+      operationId: getEncounters
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The patient ID"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Encounter"
+      security:
+        - Token: []
+
+  /clinical/domains/{domain_id}/patients/{patient_id}/encounters/{encounter_id}/:
+    get:
+      tags:
+        - domains/patients/encounters
+      summary: Find a patient's encounter by id
+      operationId: getEncounterById
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The patient ID"
+          required: true
+          type: string
+        - in: path
+          name: encounter_id
+          description: "The encounter ID"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Encounter"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Not found"
+      security:
+        - Token: []
+
+    delete:
+      tags:
+        - domains/patients/encounters
+      summary: Deletes an existing patient encounter
+      operationId: deleteEncounter
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The patient ID"
+          required: true
+          type: string
+        - in: path
+          name: encounter_id
+          description: "The ID of the encounter to delete"
+          required: true
+          type: string
+      responses:
+        204:
+          description: "Successful operation"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Not found"
+      security:
+        - Token: []
+
+    put:
+      tags:
+        - domains/patients/encounters
+      summary: Update an existing patient encounter
+      operationId: updateEncounter
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The patient ID"
+          required: true
+          type: string
+        - in: path
+          name: encounter_id
+          description: "The ID of the encounter to update"
+          required: true
+          type: string
+        - in: body
+          name: encounter
+          description: "Encounter that needs to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/Encounter"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Encounter"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Not found"
+        405:
+          description: "Validation exception"
+      security:
+        - Token: []
+
+# Event endpoints
+  /clinical/domains/{domain_id}/patients/{patient_id}/events/:
+    get:
+      tags:
+        - domains/patients/events
+      summary: List all events for a patient
+      operationId: getEvents
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The patient ID"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Event"
+      security:
+        - Token: []
+
+  /clinical/domains/{domain_id}/patients/{patient_id}/events/{event_id}/:
+    get:
+      tags:
+        - domains/patients/events
+      summary: Find a patient's event by id
+      operationId: getEventById
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: patient_id
+          description: "The patient ID"
+          required: true
+          type: string
+        - in: path
+          name: event_id
+          description: "The event ID"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Event"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Not found"
+      security:
+        - Token: []
+
+
+# Provider endpoints
+  /clinical/domains/{domain_id}/providers/:
+    get:
+      tags:
+        - domains/providers
+      summary: Get all providers
+      operationId: getProviders
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Provider"
+      security:
+        - Token: []
+
+    post:
+      tags:
+        - domains/providers
+      summary: Add a new provider
+      operationId: addProvider
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: body
+          name: description
+          description: "A name or description for this provider"
+          schema:
+            type: string
+      responses:
+        201:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Provider"
+        405:
+          description: "Invalid input"
+      security:
+        - Token: []
+
+  /clinical/domains/{domain_id}/providers/{provider_id}/:
+    get:
+      tags:
+        - domains/providers
+      summary: Get the information about a provider
+      operationId: getProvider
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: provider_id
+          description: "The ID of the provider"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+              $ref: "#/definitions/Provider"
+      security:
+        - Token: []
+
+    put:
+      tags:
+        - domains/providers
+      summary: Update a provider
+      operationId: updateProvider
+      parameters:
+        - in: path
+          name: domain_id
+          description: "The ID of the domain"
+          required: true
+          type: string
+        - in: path
+          name: provider_id
+          description: "The ID of the provider"
+          required: true
+          type: string
+      responses:
+        201:
+          description: "Succesful operation"
+          schema:
+            $ref: "#/definitions/Provider"
+
+        405:
+          description: "Invalid input"
+      security:
+        - Token: []
+
+    delete:
+      tags:
+        - domains/providers
+      summary: Delete a provider
+      operationId: deleteProvider
+      parameters:
+        - in: path
+          name: provider_id
+          description: "The ID of the provider"
+          required: true
+          type: string
+      responses:
+        201:
+          description: "Succesful operation"
+        405:
+          description: "Invalid input"
+      security:
+        - Token: []
 
   /users/:
     post:
@@ -298,7 +835,7 @@ paths:
             type: array
             items:
               $ref: "#/definitions/User"
-        
+
   /users/{user_id}:
     get:
       tags:
@@ -380,185 +917,43 @@ definitions:
       token:
         type: string
 
-  Role:
-    type: object
-    description: user role details
+  Appointment:
+    description: "A patient appointment"
+    required: [data_source_id, provider_id, start, facility_id, procedures_scheduled]
     properties:
-      name: 
-        type: string
-        description: role name
-      id: 
+      data_source_id:
         type: integer
-        description: role id
-    example:
-      id: 1, 
-      name: "curator"
-
-  User:
-    type: object
-    description: User details
-    required: [email, first_name, role_id]
-    properties:
-      id: 
-        type: integer
-        description: user id
-      email:
-        type: string
-      first_name:
-        type: string
-      last_name:
-        type: string
-      role_id:
-        type: integer
-        description: A reference to Roles
-        $ref: "#/definitions/Role"
-    
-    example:
-      email: "test@test.com"
-      first_name: "John"
-      last_name: "Wick"
-      role_id: {
-        "id": 1, 
-        "name": "curator"
-      }
-
-
-  Cohort:
-    type: object
-    description: A cohort of patients for curators to review
-    required: [description]
-    properties:
-      description:
-        type: string
-      patients:
-        type: array
-        items:
-          $ref: "#/definitions/Patient"
-        
-
-  Patient:
-    type: object
-    description: A patient
-    required: [patient_id]
-    properties:
-      patient_id:
-        type: string
-      address_state:
-        type: string
-      DECEASED_INDICATOR:
-        type: string
-      EMPLOYMENT_STATUS:
-        type: string
-      ETHNICITY:
-        type: string
-      LANGUAGE:
-        type: string
-      LIVING_SITUATION_STATUS:
-        type: string
-      MARITAL_STATUS:
-        type: string
-      PCP_ID:
-        type: string
-      RACE:
-        type: string
-      SEX:
-        type: string
-      YEAR_OF_BIRTH:
-        type: string
-      YEAR_OF_DEATH:
-        type: string
-      ZIP_3:
-        type: string
-      encounters:
-        type: array
-        items:
-          $ref: "#/definitions/Encounter"
-
-
-  Encounter:
-    type: object
-    description: A patient encounter
-    properties:
       id:
         type: string
-        description: A reference to this diagnosis
-      ADMISSION_DTTM:
+        description: "A reference to this appointment"
+      provider_id:
+        description: "The ID of the performing provider (internal boc id?) - should be validated"
         type: string
-        description: ADMISSION_DTTM
-      ADMITTING_PHYSICIAN_ID:
+      start:
+        description: "The start date and time of this appointment"
         type: string
-        description: ADMITTING_PHYSICIAN_ID
-      ARRIVAL_DTTM:
-        type: string
-        description: ARRIVAL_DTTM
-      ATTENDING_PHYSICIAN_ID:
-        type: string
-        description: ATTENDING_PHYSICIAN_ID
-      BILLING_PROVIDER_ID:
-        type: string
-        description: BILLING_PROVIDER_ID
-      CLAIM_STATEMENT_FROM_DTTM:
-        type: string
-        description: CLAIM_STATEMENT_FROM_DTTM
         format: date-time
-      CLAIM_STATEMENT_TO_DTTM:
+      facility_id:
+        description: "The treating facility of this appointment (internal boc id?) - should be validated"
         type: string
-        description: CLAIM_STATEMENT_TO_DTTM
-        format: date-time
-      DISCHARGE_DISPOSITION:
-        type: string
-        description: DISCHARGE_DISPOSITION
-      DISCHARGE_DTTM:
-        type: string
-        description: DISCHARGE_DTTM
-        format: date-time
-      DOCUMENTING_PROVIDER_ID:
-        type: string
-        description: DOCUMENTING_PROVIDER_ID
-      DTTM:
-        type: string
-        description: DTTM
-      LOCATION:
-        type: string
-        description: LOCATION
-      PLACE_OF_SERVICE:
-        type: string
-        description: PLACE_OF_SERVICE
-      RENDERING_PROVIDER_ID:
-        type: string
-        description: RENDERING_PROVIDER_ID
-      TYPE:
-        type: string
-        description: TYPE
-      TYPE_OF_BILL:
-        type: string
-        description: TYPE_OF_BILL
-      diagnoses:
-        type: array
-        items:
-          $ref: "#/definitions/Diagnosis"
-      insurances:
-        type: array
-      joint_exams:
-        type: array
-      medication_records:
-        type: array
-      notes:
-        type: array
-      observations:
-        type: array
-        items:
-          $ref: "#/definitions/Observation"
-      procedures:
+      procedures_scheduled:
+        description: >
+          Procedures to be performed at this appointment.
+          For a surgical appointment, this will typically contain one entry - but there may be more
+          complex procedures involving multiple separate steps.
         type: array
         items:
           $ref: "#/definitions/Procedure"
-      providers:
-        type: array
-      questionnaires:
-        type: array
-      results:
-        type: array
+
+  Domain:
+    type: object
+    description: "A domain of patients for curators to review"
+    required: [name]
+    properties:
+      id:
+        type: string
+      name:
+        type: string
 
   Diagnosis:
     type: object
@@ -566,308 +961,391 @@ definitions:
     properties:
       id:
         type: string
-        description: A reference to this diagnosis
+        description: "A reference to this diagnosis"
       code:
         type: string
+        description: "Standardized Diagnosis Code"
       code_type:
         type: string
+        description: "Type of Diagnosis Code.  Accepted values are ICD9, ICD10, MEDCIN and SNOMED"
+        enum: ["ICD9", "ICD10", "MEDCIN", "SNOMED"]
       name:
         type: string
-      CATEGORY:
+        description: "Description of diagnosis code"
+      category:
         type: string
-        description: CATEGORY
-      DOCUMENTING_PROVIDER_ID:
+        description: "Source of diagnosis code (family history, admitting Dx, discharging dx, etc)"
+      status:
         type: string
-        description: DOCUMENTING_PROVIDER_ID
-      STATUS:
+        description: "Status of the patient's diagnosis.  Accepted values are active diagnosis, inactive diagnosis, resolved, etc"
+        enum: ["Active", "Inactive", "Resolved"]
+      onset:
         type: string
-        description: STATUS
-      PL_FLAG:
+        description: "Date of diagnosis onset"
+        format: date-time
+      resolution:
         type: string
-        description: PL_FLAG
-      ONSET_DTTM:
-        type: string
-        description: ONSET_DTTM
-      RESOLUTION_DTTM:
-        type: string
-        description: RESOLUTION_DTTM
-      PRINCIPAL_DX_FLAG:
-        type: string
-        description: PRINCIPAL_DX_FLAG
-      ADMITTING_DX_FLAG:
-        type: string
-        description: ADMITTING_DX_FLAG
-      DISCHARGE_DX_FLAG:
-        type: string
-        description: DISCHARGE_DX_FLAG
-      PRESENT_ON_ADMISSION:
-        type: string
-        description: PRESENT_ON_ADMISSION
+        description: "Date of diagnosis resolution"
+        format: date-time
+      principal_dx:
+        type: boolean
+        description: "Flags primary diagnosis"
+
     example:
       code: "E11.311"
       code_type: "ICD-10-CM"
       name: "Type 2 diabetes mellitus with unspecified diabetic retinopathy with macular edema"
 
-  Insurance:
+  Encounter:
     type: object
+    description: "A patient encounter"
+    required: [data_source_id, start, provider_id]
     properties:
-      BENEFIT_CODE:
+      data_source_id:
+        type: integer
+      provider_id:
         type: string
-        description: BENEFIT_CODE
-      BENEFIT_NAME:
+        description: "The ID of the attending provider - internal boc id? should be validated"
+      id:
         type: string
-        description: BENEFIT_NAME
-      FINANCIAL_CLASS_CODE:
+        description: "A reference to this encounter"
+      start:
         type: string
-        description: FINANCIAL_CLASS_CODE
-      FINANCIAL_CLASS_NAME:
+        format: date-time
+        description: "Date of patient admission to facility, if applicable"
+      end:
         type: string
-        description: FINANCIAL_CLASS_NAME
-      COMPANY_CODE:
+        format: date-time
+        description: "Date of patient discharge from facility, if applicable"
+      admitting_provider_id:
         type: string
-        description: COMPANY_CODE
-      COMPANY_NAME:
+        description: "Unique Physician ID associated with the physician admitting the patient.  This is not always applicable"
+      rendering_provider_id:
         type: string
-        description: COMPANY_NAME
-      PLAN_CODE:
+        description: "Unique Physician ID associated with the physician performing an associated procedure.  This is not always applicable"
+      facility_id:
+        description: "The ID of the treating facility"
         type: string
-        description: PLAN_CODE
-      PLAN_NAME:
+      discharge_disposition:
         type: string
-        description: PLAN_NAME
+        description: "Code from standard code set: https://www.resdac.org/cms-data/variables/patient-discharge-status-code"
+        enum: [0,01,02,03,04,05,06,07,08,09,20,21,30,40,41,42,43,50,51,61,62,63,64,65,66,69,70,71,72,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95]
+      place_of_service:
+        type: string
+        description: "Type of place that this encounter happened at. Standard codeset: https://www.cms.gov/Medicare/Coding/place-of-service-codes/Place_of_Service_Code_Set.html"
+        enum: [01,02,03,04,05,06,07,08,09,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,31,32,33,34,41,42,49,50,51,52,53,54,55,56,57,60,61,62,65,71,72,81,99]
+      type:
+        type: string
+        description: "TODO - TBD"
+      type_of_bill:
+        type: string
+        description: "Code from standard set: https://med.noridianmedicare.com/web/jea/topics/claim-submission/bill-types"
+        enum: [110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,510,511,512,513,514,515,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,543,544,545,546,547,548,549,550,551,552,553,554,555,556,557,558,559,560,561,562,563,564,565,566,567,568,569,570,571,572,573,574,575,576,577,578,579,580,581,582,583,584,585,586,587,588,589,710,711,712,713,714,715,716,717,718,719,720,721,722,723,724,725,726,727,728,729,730,731,732,733,734,735,736,737,738,739,740,741,742,743,744,745,746,747,748,749,750,751,752,753,754,755,756,757,758,759,760,761,762,763,764,765,766,767,768,769,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,841,842,843,844,845,846,847,848,849,850,851,852,853,854,855,856,857,858,859,860,861,862,863,864,865,866,867,868,869]
+      diagnoses:
+        type: array
+        items:
+          $ref: "#/definitions/Diagnosis"
+      joint_exams:
+        type: array
+        items:
+          $ref: "#/definitions/JointExam"
+      medications:
+        type: array
+        items:
+          $ref: "#/definitions/Medication"
+      notes:
+        type: array
+        items:
+          $ref: "#/definitions/Note"
+      procedures:
+        type: array
+        items:
+          $ref: "#/definitions/Procedure"
+      observations:
+        type: array
+        items:
+          $ref: "#/definitions/Observation"
+      questionnaires:
+        type: array
+        items:
+          $ref: "#/definitions/Questionnaire"
+      results:
+        type: array
+        items:
+          $ref: "#/definitions/Result"
+
+  Event:
+    type: object
+    required: [start, end, type]
+    properties:
+      id:
+        type: string
+        description: "A reference to this event"
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
+      type:
+        type: string
+        enum: [module_enrollment, index, interest, trigger]
+      encounter:
+        $ref: "#/definitions/Encounter"
+      appointment:
+        $ref: "#/definitions/Appointment"
+      module_instances:
+        type: array
+        items:
+          $ref: "#/definitions/ModuleInstance"
+      related_events:
+        type: array
+        items:
+          type: string
 
   JointExam:
     type: object
     properties:
-      PERFORMING_PROVIDER_ID:
+      id:
         type: string
-        description: PERFORMING_PROVIDER_ID
-      DOCUMENTING_PROVIDER_ID:
+        description: "A reference to this JointExam"
+      performing_provider_id:
         type: string
-        description: DOCUMENTING_PROVIDER_ID
-      ESR:
+        description: "Local ID of the provider who performed the joint exam"
+      esr:
         type: string
-        description: ESR
-      STATUS:
-        type: string
-        description: STATUS
-      TOTAL_NORMAL_28_JOINT_COUNT:
-        type: string
-        description: TOTAL_NORMAL_28_JOINT_COUNT
-      TOTAL_SWOLLEN_28_JOINT_COUNT:
-        type: string
-        description: TOTAL_SWOLLEN_28_JOINT_COUNT
-      TOTAL_TENDER_28_JOINT_COUNT:
-        type: string
-        description: TOTAL_TENDER_28_JOINT_COUNT
-      TOTAL_NORMAL_76_JOINT_COUNT:
-        type: string
-        description: TOTAL_NORMAL_76_JOINT_COUNT
-      TOTAL_SWOLLEN_76_JOINT_COUNT:
-        type: string
-        description: TOTAL_SWOLLEN_76_JOINT_COUNT
-      TOTAL_TENDER_76_JOINT_COUNT:
-        type: string
-        description: TOTAL_TENDER_76_JOINT_COUNT
+        description: "Erythrocyte sedimentation rate (ESR) measured for the patient"
+      total_normal_28_joint_count:
+        type: integer
+        description:  "Total count of normal joints based on a 28-joint count"
+      total_swollen_28_joint_count:
+        type: integer
+        description: "Total count of swollen joints based on a 28-joint count"
+      total_tender_28_joint_count:
+        type: integer
+        description: "Total count of tender joints based on a 28-joint count"
+      total_normal_76_joint_count:
+        type: integer
+        description: "Total count of normal joints based on a 76-joint count"
+      total_swollen_76_joint_count:
+        type: integer
+        description: "Total count of swollen joints based on a 76-joint count"
+      total_tender_76_joint_count:
+        type: integer
+        description: "Total count of tender joints based on a 76-joint count"
 
-  MedicationRecord:
+  Medication:
     type: object
     properties:
-      MEDICATION_RECORD_TYPE:
+      id:
         type: string
-        description: MEDICATION_RECORD_TYPE (administration, order, patient_reported)
-      ACTION:
+        description: "A reference to this Medication"
+      medication_record_type:
         type: string
-        description: ACTION
-      ADMINISTERING_PROVIDER_ID:
+        description: "Type of medication record, for example - administration, order, patient_reported"
+        enum: [administration, order, patient_reported]
+      administering_provider_id:
         type: string
-        description: ADMINISTERING_PROVIDER_ID
-      CODE:
+        description: "For drugs administered directly to the patient, this identifies the administering provider ID"
+      action:
         type: string
-        description: CODE
-      DAW_FLAG:
+        description: "TODO - TBD"
+      code:
         type: string
-        description: DAW_FLAG
-      DAYS_SUPPLY:
+        description: "Medication Code - may be a code from any standard code set including NDC, GPI, and SNOMED"
+      dispense_as_written:
+        type: boolean
+        description: "True if medication to be dispensed as written"
+      days_supply:
         type: string
-        description: DAYS_SUPPLY
-      DAYS_SUPPLY_DERIVED:
+        description: "Days supply for medications ordered"
+      days_supply_derived:
         type: string
-        description: DAYS_SUPPLY_DERIVED
-      DISCONTINUE_FLAG:
+        description: "Days supply for medications ordered"
+      discontinued:
+        type: boolean
+        description: "True if medication is discontinued"
+      dispense_quantity:
         type: string
-        description: DISCONTINUE_FLAG
-      DISPENSE_QUANTITY:
+        description: "Amount of medication dispensed.  For example, this could be a pill count"
+      doses_per_day:
         type: string
-        description: DISPENSE_QUANTITY
-      DOCUMENTING_PROVIDER_ID:
+        description: "Number of doses prescribed per day"
+      doses_per_day_derived:
         type: string
-        description: DOCUMENTING_PROVIDER_ID
-      DOCUMENTING_PROV_ID:
+        description: "Number of doses prescribed per day"
+      end:
         type: string
-        description: DOCUMENTING_PROV_ID
-      DOSES_PER_DAY:
+        description: "End date of medication record"
+        format: date-time
+      expire:
         type: string
-        description: DOSES_PER_DAY
-      DOSES_PER_DAY_DERIVED:
+        description: "Expiration date of medication"
+        format: date-time
+      form:
         type: string
-        description: DOSES_PER_DAY_DERIVED
-      END_DTTM:
+        description: "Medication Form.  For example, liquid, tablets, inhalers, capsules, etc"
+      frequency:
         type: string
-        description: END_DTTM
-      EXPIRE_DTTM:
+        description: "Medication frequency for the prescribed medications"
+      gpi:
         type: string
-        description: EXPIRE_DTTM
-      FORM:
+        description: "Medication GPI code (Generic Product Identifier). Not always applicable "
+      infusion_dose:
         type: string
-        description: FORM
-      FREQUENCY:
+        description: "For infusion medications, this field contains the dosage"
+      infusion_end:
         type: string
-        description: FREQUENCY
-      GPI:
+        description: "For infusion medications, this field denotes the end time"
+        format: date-time
+      infusion_expiry_1:
         type: string
-        description: GPI
-      INFUSION_DOSE:
+        description: "For infusion medications, this field denotes the first expiry date"
+        format: date-time
+      infusion_expiry_2:
         type: string
-        description: INFUSION_DOSE
-      INFUSION_END_DTTM:
+        description: "For infusion medications, this field denotes the second expiry date"
+        format: date-time
+      infusion_expiry_3:
         type: string
-        description: INFUSION_END_DTTM
-      INFUSION_EXPIRY_1_DTTM:
+        description: "For infusion medications, this field denotes the third expiry date"
+        format: date-time
+      infusion_expiry_4:
         type: string
-        description: INFUSION_EXPIRY_1_DTTM
-      INFUSION_EXPIRY_2_DTTM:
+        description: "For infusion medications, this field denotes the fourth expiry date"
+        format: date-time
+      infusion:
+        type: boolean
+        description: "True if the medication as an infusion"
+      infusion_patient_weight:
         type: string
-        description: INFUSION_EXPIRY_2_DTTM
-      INFUSION_EXPIRY_3_DTTM:
+        description: "Weight of the patient at the time of the infusion"
+      infusion_patient_weight_unit:
         type: string
-        description: INFUSION_EXPIRY_3_DTTM
-      INFUSION_EXPIRY_4_DTTM:
+        description: "Unit for the patient weight at the time of the infusion"
+      infusion_planned_dose:
         type: string
-        description: INFUSION_EXPIRY_4_DTTM
-      INFUSION_FLAG:
+        description: "Infusion planned dosage"
+      infusion_planned_dose_unit:
         type: string
-        description: INFUSION_FLAG
-      INFUSION_PATIENT_WEIGHT:
+        description: "Unit associated with the infusion planned dosage"
+      infusion_rate:
         type: string
-        description: INFUSION_PATIENT_WEIGHT
-      INFUSION_PATIENT_WEIGHT_UNIT:
+        description: "Rate of the infusion"
+      infusion_rate_unit:
         type: string
-        description: INFUSION_PATIENT_WEIGHT_UNIT
-      INFUSION_PLANNED_DOSE:
+        description: "Unit associated with the rate of infusion"
+      infusion_reason_for_adjustment:
         type: string
-        description: INFUSION_PLANNED_DOSE
-      INFUSION_PLANNED_DOSE_UNIT:
+        description: "Reason, if any, for an adjustment in the planned dosage"
+      infusion_start:
         type: string
-        description: INFUSION_PLANNED_DOSE_UNIT
-      INFUSION_RATE:
+        description: "For infusion medications, this field denotes the start time"
+        format: date-time
+      infusion_therapy_type:
         type: string
-        description: INFUSION_RATE
-      INFUSION_RATE_UNIT:
+        description: "For infusion medications, this field describes the type of infusion"
+      infusion_volume_infused:
         type: string
-        description: INFUSION_RATE_UNIT
-      INFUSION_REASON_FOR_ADJUSTMENT:
+        description: "Actual infusion volume administered"
+      infusion_volume_infused_unit:
         type: string
-        description: INFUSION_REASON_FOR_ADJUSTMENT
-      INFUSION_START_DTTM:
+        description: "Unit associated with actual infusion volume administered"
+      name:
         type: string
-        description: INFUSION_START_DTTM
-      INFUSION_THERAPY_TYPE:
+        description: "Medication Name"
+      ndc:
         type: string
-        description: INFUSION_THERAPY_TYPE
-      INFUSION_VOLUME_INFUSED:
+        description: "Medication NDC (National Drug Code)"
+      or_dispense:
         type: string
-        description: INFUSION_VOLUME_INFUSED
-      INFUSION_VOLUME_INFUSED_UNIT:
+        description: "Identifies medications as administered or dispensed"
+      pharmacy_fill_number:
         type: string
-        description: INFUSION_VOLUME_INFUSED_UNIT
-      NAME:
+        description: "This denotes the fill number associated with a dispensed medication - not always applicable"
+      prescription_fill_number:
         type: string
-        description: NAME
-      NDC:
+        description: "This denotes the fill number associated with a dispensed medication - not always applicable"
+      reason_for_discontinuation:
         type: string
-        description: NDC
-      OR_DISPENSE:
+        description: "Reason why a medication was discontinued"
+      reason_for_start:
         type: string
-        description: OR_DISPENSE
-      PHARMACY_FILL_NUMBER:
+        description: "Reason for starting a medication"
+      refills_authorized:
         type: string
-        description: PHARMACY_FILL_NUMBER
-      PHARMACY_PRESCRIPTION_ID:
+        description: "Number of medication refills authorized"
+      route_of_admin:
         type: string
-        description: PHARMACY_PRESCRIPTION_ID
-      PRESCRIBING_PROVIDER_ID:
+        description: "Medication route of administration"
+      rxnorm:
         type: string
-        description: PRESCRIBING_PROVIDER_ID
-      PRESCRIPTION_FILL_NUMBER:
+        description: "Standardized RxNorm medication code if available"
+      sig:
         type: string
-        description: PRESCRIPTION_FILL_NUMBER
-      REASON_FOR_DISCONTINUATION:
+        description: "Physician notes regarding medication dispensed or administered"
+      start:
         type: string
-        description: REASON_FOR_DISCONTINUATION
-      REASON_FOR_START:
+        description: "Medication start date"
+        format: date-time
+      status:
         type: string
-        description: REASON_FOR_START
-      REFILLS_AUTHORIZED:
+        description: "Medication status.  For example, Active, discontinued, etc"
+      strength:
         type: string
-        description: REFILLS_AUTHORIZED
-      REFILLS_AUTHORIZED_NUMERIC:
+        description: "Medication dosage strength"
+      total_dose:
         type: string
-        description: REFILLS_AUTHORIZED_NUMERIC
-      ROUTE_OF_ADMIN:
+        description: "Total medication dosage"
+      type:
         type: string
-        description: ROUTE_OF_ADMIN
-      RXNORM:
+        description: "Describes source of the medication data, for example prescription"
+      unit:
         type: string
-        description: RXNORM
-      SIG:
+        description: "Unit of measure associated with administered medications"
+
+  ModuleInstance:
+    type: object
+    required: [module_id, instance_id, type]
+    properties:
+      module_id:
+        type: integer
+        format: int32
+      instance_id:
+        type: integer
+        format: int32
+      type:
         type: string
-        description: SIG
-      START_DTTM:
-        type: string
-        description: START_DTTM
-      STATUS:
-        type: string
-        description: STATUS
-      STRENGTH:
-        type: string
-        description: STRENGTH
-      TOTAL_DOSE:
-        type: string
-        description: TOTAL_DOSE
-      TYPE:
-        type: string
-        description: TYPE
-      UNIT:
-        type: string
-        description: UNIT
 
   Note:
     type: object
     properties:
-      NAME:
+      id:
         type: string
-        description: NAME
-      DOCUMENTING_PROVIDER_ID:
+        description: "A reference to this Note"
+      name:
         type: string
-        description: DOCUMENTING_PROVIDER_ID
-      TEXT:
+        description: Name
+      documenting_provider_id:
         type: string
-        description: TEXT
+        description: "The provider who documented the text in the note."
+      text:
+        type: string
+        description: "The content of the note."
 
   Observation:
     type: object
-    required: [code, value, units]
+    required: [code, value, unit]
     properties:
       id:
         type: string
-        description: A reference to this observation
+        description: "A reference to this observation"
       code:
         description: >
           Code describing the type of observation.
           Observations codes generally depend on the data source
           and the only standardized code type may be SNOMED, but we treat this as
-          if it depends on the data source
+          if it depends on the data source.
         type: string
       name:
         description: "Optional text description of this type of observation"
@@ -875,55 +1353,107 @@ definitions:
       value:
         description: "The measurement recorded for this observation"
         type: string
-      units:
-        description: "The units of measurement for the observation"
+      unit:
+        description: "The unit of measurement for the observation"
         type: string
-      DOCUMENTING_PROV_ID:
-        type: string
-        description: DOCUMENTING_PROV_ID
-      STATUS:
-        type: string
-        description: STATUS
-
     example:
       code: "3141-9"
       name: "Patient Body Weight - Measured"
       value: "86"
-      units: "kg"
+      unit: "kg"
+
+  Patient:
+    type: object
+    description: "Information about a patient that does not change with time."
+    required: [patient_id]
+    properties:
+      patient_id:
+        description: "Unique ID of the patient that can be used to search for a patient record"
+        type: string
+      deceased:
+        description: "Is this patient dead"
+        type: boolean
+      race:
+        type: string
+      sex_at_birth:
+        description: "The sex of the patient at birth"
+        enum: [Male, Female, Unknown, Other]
+        type: string
+      date_of_birth:
+        description: "Date of birth. If only the year is known"
+        type: string
+      dob_is_year:
+        description: "True if the value in date_of_birth is only accurate to the year."
+        type: boolean
+      encounters:
+        type: array
+        items:
+          $ref: "#/definitions/Encounter"
+      demographics:
+        type: array
+        items:
+          $ref: "#/definitions/PatientDemographic"
+
+  PatientDemographic:
+    type: object
+    description: "Information about a patient that may change with time"
+    required: [patient_id]
+    properties:
+      patient_id:
+        type: string
+        description: "Unique ID of the patient"
+      recorded:
+        type: string
+        format: date-time
+      sex:
+        type: string
+        description: >
+          The sex of the patient at this time.
+        enum: [Male, Female, Unknown, Other]
+
 
   Procedure:
     type: object
+    description: "A procedure or a scheduled procedure"
     required: [code, code_type]
     properties:
       id:
         type: string
-        description: A reference to this procedure
+        description: "A reference to this procedure"
       anatomic_location:
         type: string
+        description: "Anatomical location of performed procedure, if applicable"
       code:
         type: string
+        description: "Standardize code associated with the procedure code (see code_type for more information)"
       code_type:
         type: string
+        description: "Type of procedure code such as CPT, HCPCs, ICD9/10, etc"
       name:
         type: string
-      BILLING_PROVIDER_ID:
+        description: "Name of performed procedure"
+      principal_procedure:
+        type: boolean
+        description: "This flag is true if the primary procedure for a given encounter"
+      quantity:
         type: string
-      DOCUMENTING_PROVIDER_ID:
+        description: "Number of units associated with the procedure code"
+      rev_code:
         type: string
-      ORDERING_PROVIDER_ID:
+        description: "Revenue Code associated with the procedure billed, if applicable. Useful for inpatient"
+      ordering_provider_id:
         type: string
-      PERFORMING_PROVIDER_ID:
+        description: "The ID of the ordering provider"
+      performing_provider_id:
         type: string
-      PRINCIPAL_PROCEDURE_FLAG:
+        description: "The ID of the performing provider"
+      results:
         type: string
-      QUANTITY:
+        description: "Free text"
+      status:
         type: string
-      RESULTS:
-        type: string
-      REV_CODE (useful for inpatient):
-        type: string
-      STATUS:
-        type: string
+        description: "Free text"
+
     example:
       code: "92941"
       code_type: "CPT"
@@ -931,144 +1461,109 @@ definitions:
 
   Provider:
     type: object
+    required: [first_name, last_name]
     properties:
-      DEPARTMENT_LOCAL:
+      id:
         type: string
-        description: DEPARTMENT_LOCAL
-      DEPARTMENT_MAPPED:
+        description: "A reference to this provider"
+      first_name:
         type: string
-        description: DEPARTMENT_MAPPED
-      NPI:
+      last_name:
         type: string
-        description: NPI
-      SPECIALTY_CODE_LOCAL:
+      npi:
         type: string
-        description: SPECIALTY_CODE_LOCAL
-      SPECIALTY_CODE_MAPPED:
+        description: "National Provider Identifier"
+      specialty_code:
         type: string
-        description: SPECIALTY_CODE_MAPPED
-      SPECIALTY_IS_PRIMARY_FLAG:
+        description: "Provider Specialty"
+      type:
         type: string
-        description: SPECIALTY_IS_PRIMARY_FLAG
-      SPECIALTY_SEQUENCE_NUMBER:
-        type: string
-        description: SPECIALTY_SEQUENCE_NUMBER
-      STATUS_LOCAL:
-        type: string
-        description: STATUS_LOCAL
-      STATUS_MAPPED:
-        type: string
-        description: STATUS_MAPPED
-      TYPE_LOCAL:
-        type: string
-        description: TYPE_LOCAL
-      TYPE_MAPPED:
-        type: string
-        description: TYPE_MAPPED
-      ZIP_CODE:
-        type: string
-        description: ZIP_CODE
+        description: "Describes provider License information.  For example, MD, DO, etc"
 
   Questionnaire:
     type: object
     properties:
-      CATEGORY:
+      id:
         type: string
-        description: CATEGORY
-      CODE:
+        description: "A reference to this Questionnaire"
+      name:
         type: string
-        description: CODE
-      DOCUMENTING_PROVIDER_ID:
+        description: "Questionnaire name (e.g., SDAI)"
+      result:
         type: string
-        description: DOCUMENTING_PROVIDER_ID
-      NAME:
-        type: string
-        description: NAME
-      RESULT:
-        type: string
-        description: RESULT
-      RESULT_UNIT:
-        type: string
-        description: RESULT_UNIT
-      SUBCATEGORY:
-        type: string
-        description: SUBCATEGORY
-      STATUS:
-        type: string
-        description: STATUS
-      TYPE:
-        type: string
-        description: TYPE
+        description: "Questionnaire result"
 
   Result:
     type: object
     properties:
-      STATUS:
+      id:
         type: string
-        description: STATUS
-      ORDER_ID:
+        description: "A reference to this Result"
+      status:
         type: string
-        description: ORDER_ID
-      ORDER_CODE:
+        description: "The status of whether the lab result has been reviewed, acknowledged and finalized."
+      panel_code:
         type: string
-        description: ORDER_CODE
-      PANEL_CODE:
+        description: "The name of the lab panel.  The panel may contain more than one type lab result, so it is a higher level entity than the result field.  If this is not populated then the PANEL_NAME may be populated and will be displayed as the name of the lab panel."
+      panel_name:
         type: string
-        description: PANEL_CODE
-      PANEL_NAME:
+        description: "The name of the lab panel.  It this is not populated then the PANEL_CODE may be populated and will be displayed as the name of the lab panel."
+      code:
         type: string
-        description: PANEL_NAME
-      CODE:
+        description: "The name of the lab result. Only display this value on the screen as the Lab Name if the NAME is not populated"
+      name:
         type: string
-        description: CODE
-      NAME:
+        description: "The name of the lab result.  This should be displayed as the lab name, if it is not populated then the value in the CODE should be displayed."
+      value:
         type: string
-        description: NAME
-      VALUE:
+        description: "The result for the lab.  The result may be appear as text or numeric depending on the type of lab that it is."
+      unit:
         type: string
-        description: VALUE
-      UNIT:
+        description: "The unit is the unit for the lab result.  If the value is Text or Picklist this does not need to be displayed. "
+      reference_range:
         type: string
-        description: UNIT
-      REFERENCE_RANGE:
+        description: "Lab test reference range which displays the acceptable result values"
+      loinc:
         type: string
-        description: REFERENCE_RANGE
-      LOINC:
+        description: "Standardized Lab Test Code, if available use the LOINC name rather than the code"
+      performed:
         type: string
-        description: LOINC (description would be desired)
-      PERFORMED_DTTM:
+        description: "Date the lab was performed or tested"
+        format: date-time
+      abnormal:
+        type: boolean
+        description: "Flag is set to True when the lab result is outside of the expected range"
+      specimen_source:
         type: string
-        description: PERFORMED_DTTM
-      PERFORMING_PROVIDER_ID:
+        description: "The source of the lab specimen.  For example, serum, urine, etc"
+
+  Score:
+    type: object
+    properties:
+      id:
         type: string
-        description: PERFORMING_PROVIDER_ID
-      DOCUMENTING_PROVIDER_ID:
+        description: "A reference to this score"
+      score_instance_id:
         type: string
-        description: DOCUMENTING_PROVIDER_ID
-      MICROBIO_ORGANISM:
+      observation_datetime:
         type: string
-        description: MICROBIO_ORGANISM
-      MICROBIO_ANTIBIOTIC:
+        format: date-time
+      score:
+        type: number
+        format: decimal
+      confidence:
+        type: number
+        format: decimal
+      threshold:
+        type: number
+        format: decimal
+      match:
+        type: boolean
+      match_datetime:
         type: string
-        description: MICROBIO_ANTIBIOTIC
-      MICROBIO_SENSITIVITY:
-        type: string
-        description: MICROBIO_SENSITIVITY
-      MICROBIO_MIC:
-        type: string
-        description: MICROBIO_MIC
-      ABNORMAL_FLAG:
-        type: string
-        description: ABNORMAL_FLAG
-      SPECIMEN_SOURCE:
-        type: string
-        description: SPECIMEN_SOURCE
-      REFERENCE_RANGE_LOWER:
-        type: string
-        description: REFERENCE_RANGE_LOWER
-      REFERENCE_RANGE_UPPER:
-        type: string
-        description: REFERENCE_RANGE_UPPER
+        format: date-time
+      referenced_module_instance:
+        $ref: "#/definitions/ModuleInstance"
 
 securityDefinitions:
   Token:

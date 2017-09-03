@@ -1,0 +1,417 @@
+#chartreview {
+    background: rgba(189, 195, 199, 0.5);
+    height: 100%;
+    top: 0;
+}
+
+@media (max-width:999px) {
+    .vr {
+        display: none;
+    }
+}
+
+@media (min-width:768px) {
+    .vr {
+        width: 1px;
+        background-color: #ddd;
+        position: absolute;
+        top: 170px;
+        bottom: 0;
+        left: 33.5%;
+    }
+}
+
+.patient-id-typeahead {
+    float: right;
+    ul {
+        width: 100%;
+    }
+}
+
+.collapse-no-results-found {
+    text-align: center;
+}
+
+.crf-div .crf-div-tab-content {
+    padding-top: 2%;
+    .panel,
+    .well {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+    .crf-question {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+}
+
+.encounters-panel .panel-heading {
+    background-color: #43454a!important;
+    color: white!important;
+}
+
+.details-tab {
+    max-height: 690px;
+    overflow: auto;
+}
+
+.details-data {
+    padding-left: 4px;
+    word-wrap: break-word;
+}
+
+#patientSummary .panel-heading {
+    background-color: #43454a;
+    color: white;
+}
+#patientSummary .panel-body .row{
+    margin-left: 0px;
+}
+.year-div {
+    border: 2px solid double;
+}
+
+.cohort-heading-border {
+    margin-top: 0px!important;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+.note-div,
+.result-div,
+.questionnaire-div,
+.provider-div,
+.procedure-div,
+.observation-div,
+.note-div,
+.medication-record-div,
+.joint-exam-div,
+.insurance-div,
+.diagnoses-div {
+    padding: 0px;
+    .panel-group {
+        margin: 0px;
+    }
+    .panel-body {
+        padding: 10px 5px!important;
+    }
+}
+
+.individual-encounter-div {
+    .panel-body {
+        padding: 0px;
+    }
+}
+
+.individual-encounter-div .panel-heading
+ {
+    background-color: #9ea0a0!important;
+    color: black!important;
+    padding: 0px!important;
+    font-size: 18px!important;
+    min-height: 40px!important;
+    .fa.fa-chevron-up {
+        float: right;
+        margin: 10px;
+        color: #43454a;
+        opacity: 0.5;
+    }
+    .collapsed .fa.fa-chevron-up {
+        transform: rotateZ(180deg);
+    }
+    a {
+        cursor: pointer;
+        color: black;
+        display: 'block';
+        height: 100%;
+    }
+    a:hover {
+        text-decoration: none;
+        color: black;
+    }
+    .panel-title {
+        display: block;
+        height: 100%;
+        line-height: 2.4;
+        height: 40px!important;
+        padding-left: 10px!important;
+    }
+}
+
+.disable-collapse-link {
+    pointer-events: none!important;
+}
+
+.enable-collapse-link {
+    color: #337ab7!important;
+}
+
+.select-patient-info {
+    text-align: center;
+}
+
+.available-templates {
+    .popover-content {
+        padding: 0;
+    }
+    ul {
+        margin-left: 0;
+        padding: 0;
+    }
+    li {
+        list-style-type: none;
+        left: 0;
+        text-align: left;
+        line-height: 1.5;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        padding: 10px;
+        cursor: pointer;
+        padding-left: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    li:last-child {
+        border-bottom: none;
+    }
+    li:hover {
+        background-color: #ecf0f1;
+    }
+}
+
+.cohort-name {
+    margin: 10px;
+    font-size: 15px;
+    .fa {
+        margin: 0 20px;
+    }
+}
+
+.view-templates {
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+}
+
+.required-field {
+    font-size: 14px;
+    padding-left: 10px;
+}
+
+.template-dropdown {
+    span {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 100px;
+        display: inline-block;
+        overflow: hidden;
+    }
+    .fa {
+        float: right;
+        line-height: 1.6;
+        padding-left: 7px;
+    }
+}
+
+.render-template {
+    .questions-content {
+        max-height: 600px;
+        margin-bottom: 30px;
+        overflow: auto;
+    }
+    .crfs-completed {
+        line-height: 2.4;
+    }
+}
+
+.help-text {
+    cursor: pointer;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.help-content {
+    padding: 5px;
+}
+
+.template-content {
+    border: 1px solid #e7e7e7;
+    border-radius: 5px;
+    .crf-div,
+    .patient-summary-div {
+        padding: 0px;
+        border-left: 2px solid #eee;
+    }
+    .template-selection,
+    .jump-to-control {
+        border-bottom: 1px solid #e7e7e7;
+        padding: 12px;
+        margin-bottom: 10px;
+        ul {
+            min-width: initial;
+            li {
+                border-bottom: 1px solid #eee;
+                padding: 2px;
+                .crf-status {
+                    padding-left: 10px;
+                    font-size: 12px;
+                    color: rgba(52, 73, 94, 0.8);
+                }
+                &:last-child {
+                    border: none
+                }
+            }
+        }
+    }
+    .jump-to-control {
+        min-height: 64px;
+        min-width: 100px;
+        ul {
+            width: 100%;
+        }
+    }
+}
+
+.btn-add-annotation {
+    text-align: left;
+    outline: none;
+}
+
+.crf-controls {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.collapse-all-btn {
+    float: right;
+    color: white;
+    background-color: #bdc3c7;
+}
+
+.no-encounters-info {
+    text-align: center;
+}
+
+.collapse-all-btn-div {
+    padding-bottom: 10%;
+}
+
+.panel-body {
+    .col-lg-12.col-md-12 {
+        word-wrap: break-word;
+    }
+}
+
+.note-text {
+    padding: 15px;
+    word-wrap: break-word;
+}
+
+.encounter-label {
+        margin-bottom: 1%;
+    }
+.individual-sec{
+    border-bottom: 1px solid #ddd;
+    padding-top: 2%;
+}
+select#selectSection{
+    width: 85%;
+}
+//collapsible panels styles
+.collapse-show-links {
+    float: right;
+    padding-right: 20px;
+    font-weight: 700;
+}
+
+.Collapsible {
+    background-color: white;
+}
+
+.Collapsible__contentInner {
+    padding: 10px;
+    border: 1px solid #ebebeb;
+    border-top: 0;
+}
+
+.Collapsible__trigger {
+    cursor: pointer;
+    display: block;
+    font-weight: 400;
+    text-decoration: none;
+    color: #333333;
+    position: relative;
+    border: 1px solid white;
+    padding: 10px;
+    background: #d0d0d0;
+    color: #000;
+    height: 40px;
+}
+
+.Collapsible__trigger:after {
+    font-family: 'FontAwesome';
+    content: '\f055';
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: block;
+    font-size: 14px;
+    transition: transform 1000ms;
+    color: white;
+}
+
+.Collapsible__trigger.is-open:after {
+    font-family: 'FontAwesome';
+    content: '\f056';
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 14px;
+    display: block;
+    transition: transform 1000ms;
+}
+
+.Collapsible__trigger.is-disabled {
+    opacity: 0.5;
+    background-color: grey;
+}
+
+.CustomTriggerCSS {
+    background-color: lightcoral;
+    transition: background-color 200ms ease;
+}
+
+.CustomTriggerCSS--open {
+    background-color: darkslateblue;
+}
+
+.encounters-panel {
+    .panel-heading {
+        border: none;
+        border-radius: 0;
+    }
+    .panel-body {
+        border-radius: 0;
+        padding: 0 !important;
+    }
+}
+
+.question-options {
+    .radio, .checkbox {
+        float: left;
+        padding-left: 10px;
+        label {
+            word-break: break-all;
+        }
+    }
+}
+.crf-question .text-danger {
+    display: inline-block;
+}
+.annotation-textarea{
+    resize: vertical;
+}
+#selectSection{
+    cursor: pointer;
+}

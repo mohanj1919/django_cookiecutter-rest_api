@@ -6,25 +6,27 @@ volumes:
 
 services:
   postgres:
-    build: ./compose/postgres
+    container_name: curation_postgres_1
+    image: postgres
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
       - postgres_backup_dev:/backups
     ports:
       - "5432:5432"
-    env_file: .env_dev
+    env_file: .env
 
-  django:
+  app:
+    image: curation-dev:latest
     build:
-      context: .
+      context: ./curation-api/
       dockerfile: ./compose/django/Dockerfile-dev
-    command: python /usr/src/app/manage.py runserver 0.0.0.0:8000
-    depends_on:
-      - postgres
-    env_file: .env_dev
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file: .env
     volumes:
       - .:/usr/src/app/
     ports:
       - "8000:8000"
+    depends_on:
+      - postgres
     links:
       - postgres

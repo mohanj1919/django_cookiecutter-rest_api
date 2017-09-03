@@ -1,0 +1,30 @@
+[{
+    "id": 9,
+    "text": "Did the patient have knee surgery?",
+    "parent_condition": null,
+    "question_type": "radio",
+    "question_id": 9,
+    "responses": "Yes,No,Unknown",
+    "response": "No",
+    "parent_question": "",
+    "note": "Help text content",
+    "parent_response": null,
+    "annotation_text": "text in annotation",
+    "options": [{
+        "value": "encounter",
+        "selected": false
+    }],
+    "is_active": true
+}, {
+    "id": 10,
+    "text": "Total knee replacement",
+    "parent_condition": "equals",
+    "note": null,
+    "question_type": "radio",
+    "question_id": 10,
+    "responses": "Yes,No,Unknown",
+    "response": "Yes",
+    "parent_question": "",
+    "parent_response": "",
+    "is_active": true
+}]

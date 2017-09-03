@@ -1,0 +1,28 @@
+version: '2'
+
+volumes:
+  dist: {}
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - dist:/app/dist
+    restart: unless-stopped
+    command: npm run build && npm run start
+
+  omstatic:
+    image: httpd:latest
+    volumes:
+      - dist:/usr/local/apache2/htdocs/
+    depends_on:
+      - web
+    ports:
+      - "9000:80"

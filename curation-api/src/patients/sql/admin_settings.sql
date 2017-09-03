@@ -1,0 +1,58 @@
+INSERT INTO curation_admin_setting
+(
+    id,
+    setting,
+    text,
+    type,
+    value,
+    settings_group,
+    max,
+    min,
+    is_active,
+    created_on,
+    created_by,
+    updated_on,
+    updated_by
+)
+VALUES (
+    1,
+    'password_expiry',
+    'Number of days that Password will expire (in days)',
+    'number',
+    '30',
+    'Password Configuration',
+    90,
+    10,
+    true,
+    NOW(),
+    'admin',
+    NOW(),
+    '')
+, (
+    2,
+    'password_history_check',
+    'Number of Passwords to keep in history for verification',
+    'number',
+    '3',
+    'Password Configuration',
+    10,
+    3,
+    true,
+    NOW(),
+    'admin',
+    NOW(),
+    '')
+, (
+    3,
+    'OTP',
+    'OPT SMS text',
+    'text',
+    'OTP is {otp} for login at OM1. Do not share OTP for security reasons',
+    'MFA Configuration',
+    150,
+    1,
+    true,
+    NOW(),
+    'admin',
+    NOW(),
+    '')

@@ -1,0 +1,19 @@
+textarea { resize: vertical; }
+.cohort-configure {
+    .bootstrap-typeahead-menu{
+        width: 100%;
+    }
+    .crf-template-panel{
+        .isrequired-checkbox{
+            padding-top: 10px;
+        }
+        .text-danger{
+            h3{
+                margin-top: 10px;
+            }
+        }
+    }
+    textarea{
+        min-height: 80px;
+    }
+}
