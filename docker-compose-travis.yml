@@ -29,9 +29,6 @@ services:
     volumes:
       - /usr/src/app/
       - /usr/src/app/static
-    command: /gunicorn.sh
-    ports:
-      - "80:5000"
     depends_on:
       - postgres
     links:

@@ -17,7 +17,7 @@ services:
       - POSTGRES_PASSWORD=mysecretpass
       - POSTGRES_USER=curation
       - POSTGRES_HOST=postgres
-      - POSTGRES_DB=curaiton
+      - POSTGRES_DB=curation
 
   app:
     image: api_dev:latest
