@@ -61,7 +61,8 @@ before_install:
 install:
   - env > .env
   - cat .env.example >> .env
-  - nvm install 6.11.0
+  - nvm install 4.2
+  - node version
   - cd curation-web
   - npm i
 
