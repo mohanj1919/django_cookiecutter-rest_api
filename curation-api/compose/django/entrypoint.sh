@@ -14,15 +14,23 @@ export SKIP_DB_STATUS_CHECK=0
 
 # Sleep when asked to, to allow the database time to start
 # before OM1 tries to run /checkdb.py below.
-sleep 10
+sleep 100
 
 # Setup database automatically if needed
 if [ $SKIP_DB_STATUS_CHECK -eq 0 ]; then
   echo "Running database check"
-  python checkdb.py
-  DB_CHECK_STATUS=$?
-  echo "DB_CHECK_STATUS"
-  echo $DB_CHECK_STATUS
+
+  DB_CHECK_STATUS=1
+
+  while [ "$DB_CHECK_STATUS" != 0 ]
+  do
+    echo "Database check"
+    sleep 5
+    python checkdb.py
+    DB_CHECK_STATUS=$?
+    echo "DB_CHECK_STATUS"
+    echo $DB_CHECK_STATUS
+  done
 
   if [ $DB_CHECK_STATUS -eq 1 ]; then
     echo "Failed to connect to database server or database does not exist."
