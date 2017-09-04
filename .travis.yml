@@ -75,7 +75,7 @@ script:
     # faile fast
     set -e
 
-  - npm run deploy
+  - npm run build
   # Build with docker-compose
   - docker-compose -f docker-compose-travis.yml build
   # Run tests with docker-compose
