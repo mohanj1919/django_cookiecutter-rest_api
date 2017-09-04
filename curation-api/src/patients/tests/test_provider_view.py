@@ -17,7 +17,7 @@ from ...users.models import CurationUser, CurationUserManager
 
 class ProviderViewTests(TestCase):
     def setUp(self):
-        self.cohortobj = Cohort.objects.create(name='Krishna', description='Cohort TestCase')
+        self.cohortobj = Cohort.objects.create(name='Knee pain', description='knee pain patients')
         admin = CurationUser.objects.get(email='mohan.jagabatthula@ggktech.com')
         self.client = APIClient()
         self.client.force_authenticate(user=admin)
@@ -90,6 +90,7 @@ class ProviderViewTests(TestCase):
 
     def test_create_valid_provider(self):
         payload = {
+            'id': '4dbe5c7d-a03c-3a44-9245-7233fa0dcba5',
             'first_name': 'Rahamn',
             'last_name': 'Waseem',
             'npi': 'npi_post_demo',
@@ -108,6 +109,7 @@ class ProviderViewTests(TestCase):
 
     def test_create_invalid_provider(self):
         payload = {
+            'id': '4dbe5c7d-a03c-3a44-9245-7233fa0dcba5',
             'first_name': {},
             'last_name': {},
             'npi': 'npi_post_demo',
