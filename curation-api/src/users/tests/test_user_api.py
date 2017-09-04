@@ -39,27 +39,27 @@ class CuratorUserTests(TestCase):
     def to_dict(self, input_ordered_dict):
         return loads(dumps(input_ordered_dict))
 
-    # def test_can_create_curator(self):
-    #     curator = {
-    #         'email': 'curator1@om1.com',
-    #         'first_name': 'curator',
-    #         'last_name': 'test',
-    #         'mfa_type': 'sms',
-    #         'phone_number': '0123456789',
-    #         'groups': [2]
-    #     }
-    #     curator_response = self.client.post(
-    #         '/users/',
-    #         curator,
-    #         format='json')
-    #     # user = CurationUser.objects.get(email='curator1@om1.com')
-    #     # user.is_active = True
-    #     # user.save()
-    #     print('***************')
-    #     print(curator_response)
-    #     print('***************')
-    #     self.assertEqual(curator_response.status_code,
-    #                     status.HTTP_201_CREATED)
+    def test_can_create_curator(self):
+        curator = {
+            'email': 'curator1@om1.com',
+            'first_name': 'curator',
+            'last_name': 'test',
+            'mfa_type': 'sms',
+            'phone_number': '0123456789',
+            'groups': [2]
+        }
+        curator_response = self.client.post(
+            '/users/',
+            curator,
+            format='json')
+        # user = CurationUser.objects.get(email='curator1@om1.com')
+        # user.is_active = True
+        # user.save()
+        print('***************')
+        print(curator_response)
+        print('***************')
+        self.assertEqual(curator_response.status_code,
+                        status.HTTP_201_CREATED)
 
 #     def test_can_create1_curator(self):
 #         curator = {
