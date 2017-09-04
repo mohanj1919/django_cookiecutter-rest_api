@@ -74,7 +74,9 @@ script:
     # faile fast
     set -e
     npm run build
-  - cd ../curation-api
+  - ls -a
+  - cd ../curation-api/
+  - ls -a
   # Build with docker-compose
   - docker-compose -f docker-compose-travis.yml build
   # Run tests with docker-compose
