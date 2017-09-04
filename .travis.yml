@@ -82,6 +82,7 @@ script:
   - |
     # fail fast
     set -e
+    docker-compose -f docker-compose-travis.yml up -d postgres
     docker exec -it postgres_travis_1 env
     docker-compose -f docker-compose-travis.yml run app /run_tests.sh
 
