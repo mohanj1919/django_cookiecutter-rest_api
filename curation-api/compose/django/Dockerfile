@@ -25,6 +25,6 @@ RUN sed -i 's/\r//' /entrypoint.sh \
     && chmod +x /run_tests.sh \
     && chown django /run_tests.sh
 
-WORKDIR /usr/src/app/curation-api
+WORKDIR /usr/src/app/
 
 ENTRYPOINT ["/entrypoint.sh"]
