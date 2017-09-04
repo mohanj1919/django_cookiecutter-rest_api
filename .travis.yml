@@ -62,8 +62,8 @@ install:
   - env > .env
   - cat .env.example >> .env
   - |
-    nvm install 4.2
-    nvm use 4.2
+    nvm install stable
+    nvm use stable
   - node version
   - cd curation-web
   - npm i
