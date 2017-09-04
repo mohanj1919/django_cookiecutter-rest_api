@@ -6,7 +6,7 @@ volumes:
 
 services:
   postgres:
-    container_name: curation_postgres_1
+    container_name: postgres_1
     image: postgres
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
@@ -16,7 +16,7 @@ services:
     env_file: .env
 
   app:
-    image: curation-dev:latest
+    image: api_dev:latest
     build:
       context: ./curation-api/
       dockerfile: ./compose/django/Dockerfile-dev

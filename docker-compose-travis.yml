@@ -6,7 +6,7 @@ volumes:
 
 services:
   postgres:
-    container_name: curation_postgres_travis_1
+    container_name: postgres_travis_1
     image: postgres:9.6
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -18,7 +18,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
 
   app:
-    image: curation:latest
+    image: api:latest
     build:
       context: ./curation-api/
       dockerfile: ./compose/django/Dockerfile
