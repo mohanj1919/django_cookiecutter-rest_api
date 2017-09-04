@@ -123,10 +123,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            # os.path.join(str(ROOT_DIR), 'static'),
             str(UI_APP_DIR.path('static'))
         ],
-        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -148,7 +146,6 @@ STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = (
-    # os.path.join(str(ROOT_DIR), 'static'),
     str(UI_APP_DIR.path('static')),
 )
 

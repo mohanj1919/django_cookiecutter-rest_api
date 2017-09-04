@@ -1,2 +1,2 @@
 echo "Running django tests"
-python /usr/src/app/manage.py test
+python /usr/src/app/curation-api/manage.py test

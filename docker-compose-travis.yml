@@ -1,16 +1,16 @@
 version: '2'
 
 volumes:
-  postgres_data: {}
-  postgres_backup: {}
+  travis_postgres_data: {}
+  travis_postgres_backup: {}
 
 services:
   postgres:
     container_name: postgres_travis_1
     image: postgres:9.6
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - postgres_backup:/backups
+      - travis_postgres_data:/var/lib/postgresql/data
+      - travis_postgres_backup:/backups
     ports:
       - "5432"
     environment:
@@ -20,8 +20,8 @@ services:
   app:
     image: api:latest
     build:
-      context: ./curation-api/
-      dockerfile: ./compose/django/Dockerfile
+      context: ./
+      dockerfile: ./curation-api/compose/django/Dockerfile
     user: django
     env_file: .env
     volumes:

@@ -30,15 +30,12 @@ if [ $SKIP_DB_STATUS_CHECK -eq 0 ]; then
     DB_CHECK_STATUS=$?
     echo "DB_CHECK_STATUS"
     echo $DB_CHECK_STATUS
-  done
 
-  if [ $DB_CHECK_STATUS -eq 1 ]; then
-    echo "Failed to connect to database server or database does not exist."
-    exit 1
-  elif [ $DB_CHECK_STATUS -eq 0 ]; then
-    echo "Configuring initial database"
-    python manage.py makemigrations --noinput
-    python manage.py migrate --noinput
-  fi
+    if [ $DB_CHECK_STATUS -eq 0 ]; then
+      echo "Configuring initial database"
+      python manage.py makemigrations --noinput
+      python manage.py migrate --noinput
+    fi
+  done
 fi
 exec "$@"
