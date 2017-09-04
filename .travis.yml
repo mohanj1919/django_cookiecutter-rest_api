@@ -61,7 +61,6 @@ before_install:
 install:
   - env > .env
   - cat .env.example >> .env
-  - env
   - |
     nvm install 6.10.0
     nvm use 6.10.0
