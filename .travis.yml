@@ -63,9 +63,9 @@ install:
   - cat .env.example >> .env
   - |
     unset PREFIX
-    nvm install stable
-    nvm use stable
-  - node version
+    nvm install 6.10.0
+    nvm use 6.10.0
+  - node --version
   - cd curation-web
   - npm i
 
