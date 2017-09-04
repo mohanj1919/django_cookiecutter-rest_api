@@ -61,6 +61,7 @@ before_install:
 install:
   - env > .env
   - cat .env.example >> .env
+  - env
   - |
     nvm install 6.10.0
     nvm use 6.10.0
@@ -75,7 +76,6 @@ script:
     set -e
     npm run build
     cd ..
-  - env
   # Build with docker-compose
   - docker-compose -f docker-compose-travis.yml build
   # Run tests with docker-compose
