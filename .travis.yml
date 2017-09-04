@@ -21,17 +21,17 @@ env:
     - COMPOSE_IMAGE=curation
     - DOCKER_AWS_ENV="-e AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_SESSION_TOKEN -e AWS_SESSION_EXPIRATION"
     - DOCKER_AWS_ENV_DEPLOY_USER="-e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e                    AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN -e AWS_SESSION_EXPIRATION=$AWS_SESSION_EXPIRATION"
-    - AWS_ACCOUNT=$(if [ "$BRANCH" == "production" ]; then echo 674566313132; elif [ "$BRANCH" == "deidprod" ]; then echo 130860143866; elif [ "$BRANCH" == "staging" ]; then echo 357801675085; elif [ "$BRANCH" == "deidstage" ]; then echo 125233914917; elif [ "$BRANCH" == "dev" ]; then echo 982829624023; elif [ "$BRANCH" == "development" ] ; then echo 687159894535; fi)
-    - DEVOPS_ENV=$(if [ "$BRANCH" == "production" ]; then echo production; elif [ "$BRANCH" == "deidprod" ]; then echo deidprod; elif [ "$BRANCH" == "staging" ]; then echo staging; elif [ "$BRANCH" == "deidstage" ]; then echo deidstage; elif [ "$BRANCH" == "dev" ]; then echo dev; elif [ "$BRANCH" == "development" ]; then echo deiddev; fi)
-    - PREFIX=boc-${DEVOPS_ENV}-
+    - AWS_ACCOUNT=$(if [ "$BRANCH" == "production" ]; then echo 674566313132; elif [ "$BRANCH" == "deidprod" ]; then echo 130860143866; elif [ "$BRANCH" == "staging" ]; then echo 357801675085; elif [ "$BRANCH" == "deidstage" ]; then echo 125233914917; elif [ "$BRANCH" == "dev" ]; then echo 982829624023; elif [ "$BRANCH" == "development" ] ; then echo 687159894535; elif ["$BRANCH" == "travis_deploy"]; then echo 762653616445; fi)
+    - DEVOPS_ENV=$(if [ "$BRANCH" == "production" ]; then echo production; elif [ "$BRANCH" == "deidprod" ]; then echo deidprod; elif [ "$BRANCH" == "staging" ]; then echo staging; elif [ "$BRANCH" == "deidstage" ]; then echo deidstage; elif [ "$BRANCH" == "dev" ]; then echo dev; elif [ "$BRANCH" == "development" ]; then echo deiddev; elif [ "$BRANCH" == "travis_deploy" ]; then echo test; fi)
+    - REPO_PREFIX=boc-${DEVOPS_ENV}-
     - REV_DATE=$(date +%Y%m%d%H%M%S)
     - REV="${REV_DATE}-${TRAVIS_COMMIT::7}"
     - ECR_REGISTRY_HOST=${AWS_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
-    - ECR_REPO_NAME=${PREFIX}${APP}
+    - ECR_REPO_NAME=${REPO_PREFIX}${APP}
     - ECS_IMAGE=${ECR_REGISTRY_HOST}/${ECR_REPO_NAME}
-    - ECS_CLUSTER=${PREFIX}main
-    - ECS_SERVICE=${PREFIX}${APP}
-    - ECS_TASK=${PREFIX}${APP}
+    - ECS_CLUSTER=${REPO_PREFIX}main
+    - ECS_SERVICE=${REPO_PREFIX}${APP}
+    - ECS_TASK=${REPO_PREFIX}${APP}
     - CACHE_TAG=cache_$BRANCH
     - DOCKER_COMPOSE_VERSION=1.5.2
 
@@ -62,7 +62,6 @@ install:
   - env > .env
   - cat .env.example >> .env
   - |
-    unset PREFIX
     nvm install 6.10.0
     nvm use 6.10.0
   - node --version
@@ -74,8 +73,8 @@ script:
   - |
     # faile fast
     set -e
-
-  - npm run build
+    npm run build
+  - cd ../curation-api
   # Build with docker-compose
   - docker-compose -f docker-compose-travis.yml build
   # Run tests with docker-compose
