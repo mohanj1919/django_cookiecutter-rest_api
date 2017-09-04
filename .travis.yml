@@ -75,7 +75,7 @@ script:
     set -e
     npm run build
     cd ..
-  - ls -a
+  - env
   # Build with docker-compose
   - docker-compose -f docker-compose-travis.yml build
   # Run tests with docker-compose
