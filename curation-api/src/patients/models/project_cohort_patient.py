@@ -8,11 +8,12 @@ from ...utilities.base_model import BaseModel
 
 class ProjectCohortPatientManager(models.Manager):
     use_in_migrations = True
-    def get_patient_from_pending_list(self, cohort_id):
+    def get_patient_from_pending_list(self, project_id, cohort_id):
         return self.filter(
             curation_status=ProjectCohortPatient.CurationStatus.pending,
             is_active=True,
-            cohort_id=cohort_id
+            cohort_id=cohort_id,
+            project_id=project_id
         ).first()
 
 class ProjectCohortPatient(BaseModel):

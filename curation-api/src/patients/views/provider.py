@@ -45,7 +45,7 @@ class ProviderListView(CustomGenericAPIView,
         cohort = self.get_cohort(domain_id)
         data['cohort'] = cohort.id
         data['created_by'] = request.user.email
-        data['provider_id'] = data.get('id')
+        data['provider_id'] = data['id']
         serializer = self.get_serializer(data=data)
 
         if not serializer.is_valid():

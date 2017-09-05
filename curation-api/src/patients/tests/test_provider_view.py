@@ -18,9 +18,19 @@ from ...users.models import CurationUser, CurationUserManager
 class ProviderViewTests(TestCase):
     def setUp(self):
         self.cohortobj = Cohort.objects.create(name='Knee pain', description='knee pain patients')
-        admin = CurationUser.objects.get(email='mohan.jagabatthula@ggktech.com')
+        admin_user = CurationUser.objects._create_user(
+            email="admin@curation.com",
+            password="test",
+            is_staff=True,
+            is_superuser=False,
+            is_active=True,
+            first_name="super",
+            last_name="user",
+            id=20)
+        group = Group.objects.get(name='admin')
+        admin_user.groups.set([group])
         self.client = APIClient()
-        self.client.force_authenticate(user=admin)
+        self.client.force_authenticate(user=admin_user)
         Provider.objects.create(
             first_name='Nadeem', last_name='Saif', npi='npi Demo',
             specialty_code='sp_001', type='Demo', cohort=self.cohortobj)
@@ -135,10 +145,12 @@ class ProviderDetailsViewTests(TestCase):
         self.client.force_authenticate(user=admin)
         self.provider = Provider.objects.create(
             first_name='Nadeem', last_name='Saif', npi='npi Demo',
-            specialty_code='sp_001', type='Demo', cohort=self.cohortobj)
+            specialty_code='sp_001', type='Demo', cohort=self.cohortobj,
+            provider_id='4dbe5c7d-a03c-3a44-9245-7233fa0dcba5')
 
     def test_valid_update_provider(self):
         valid_payload = {
+            'provider_id': '4dbe5c7d-a03c-3a44-9245-7233fa0dcba5',
             'first_name': 'Karthik',
             'last_name': 'Krishna',
             'npi': 'npi_post_demo',

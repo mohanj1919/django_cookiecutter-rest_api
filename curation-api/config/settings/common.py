@@ -123,6 +123,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            # os.path.join(str(ROOT_DIR), 'static'),
             str(UI_APP_DIR.path('static'))
         ],
         'OPTIONS': {
@@ -146,6 +147,7 @@ STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = (
+    # os.path.join(str(ROOT_DIR), 'static'),
     str(UI_APP_DIR.path('static')),
 )
 
@@ -305,4 +307,4 @@ DJANGO_AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', default='access_key')
 DJANGO_AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', default='secret_key')
 DJANGO_AWS_REGION = env('AWS_REGION', default='us-east-1')
 
-SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='')
+SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='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')

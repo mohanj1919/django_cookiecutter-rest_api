@@ -77,6 +77,7 @@ class CurationUser(AbstractBaseUser, BaseModel, PermissionsMixin):
     deleted_on = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, db_index=True)
     # log who deleted the user
     deleted_by = models.CharField(max_length=256, null=True)
+    is_account_locked = models.BooleanField(default=False)
 
     # field used to track the last email the user has verified (like when the email address gets changed)
     # if null - never verified
@@ -109,7 +110,7 @@ class CurationUser(AbstractBaseUser, BaseModel, PermissionsMixin):
     # those users should only ever be made via the backend
     def is_allowed_to_login(self):
         # if deleted answer is always no
-        if self.is_deleted:
+        if self.is_deleted or self.is_account_locked:
             return False
         # if super user only true if not deleted (the middleware should not allow inactive users either way)
         elif self.is_superuser:

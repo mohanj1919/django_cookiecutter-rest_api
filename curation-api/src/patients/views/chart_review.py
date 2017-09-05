@@ -239,12 +239,12 @@ class PatientChartReviewView(GenericViewSet,
         chart_review = PatientChartReviewRetrieveSerializer(updated_obj)
         return Response(chart_review.data, status=status.HTTP_200_OK)
 
-    def search_chart_review_data(self, project, cohort, patient):
+    def search_chart_review_data(self, project, cohort, patient, status):
         """
         Searches completed chart review data
         """
         queryset = ProjectCohortPatient.objects.filter(
-            curation_status=ProjectCohortPatient.CurationStatus.completed
+            curation_status=status
         ).order_by('patient', '-updated_on')
 
         if project is not None:
@@ -255,7 +255,7 @@ class PatientChartReviewView(GenericViewSet,
             queryset = queryset.filter(
                 Q(patient__patient_id__icontains=patient))
 
-        queryset = queryset.distinct('patient')
+        # queryset = queryset.distinct('patient')
         return queryset
 
     @list_route(methods=['get'])
@@ -269,7 +269,9 @@ class PatientChartReviewView(GenericViewSet,
         patient_id = req_params.get('patient_id', None)
         sort_name = req_params.get('sortName', default=None)
         sort_order = req_params.get('sortOrder', default='asc')
-        queryset = self.search_chart_review_data(project, cohort, patient_id)
+        status = req_params.get('status', default=ProjectCohortPatient.CurationStatus.completed)
+        
+        queryset = self.search_chart_review_data(project, cohort, patient_id, status)
 
         if sort_name is not None and sort_order is not None:
             queryset = self.sort_chart_reivews(queryset, sort_name, sort_order)
@@ -296,5 +298,4 @@ class PatientChartReviewView(GenericViewSet,
 
         if sort_order == 'desc':
             sort_name = '-{}'.format(sort_name)
-        print(sort_name)
         return queryset.order_by(sort_name)

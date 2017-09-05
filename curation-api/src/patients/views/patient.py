@@ -12,6 +12,7 @@ from ..models import (
     Cohort,
     Patient,
     ProjectCohort,
+    PatientChartReview,
     ProjectCurator,
     ProjectCohortPatient)
 from ..serializers import PatientSerializer
@@ -102,8 +103,7 @@ class PatientView(ListModelViewMixin,
         if assigned_patient is None:
             logger.info('Fetching next available patient for curation')
             # new_patient = Patient.objects.get_patient_from_pending_list(cohort_id)
-            new_patient = ProjectCohortPatient.objects.get_patient_from_pending_list(
-                cohort_id)
+            new_patient = ProjectCohortPatient.objects.get_patient_from_pending_list(project_id, cohort_id)
             if new_patient is not None and self.is_patient_present_in_cohort(cohort_id, new_patient.patient_id):
                 new_patient.curation_status = ProjectCohortPatient.CurationStatus.inprogress
                 new_patient.curator_id = curator_id
@@ -194,11 +194,13 @@ class PatientView(ListModelViewMixin,
         Get the patients who's curation is completed across all projects.
         """
         req_params = request.GET
-        reqeust_user = self.request.user
 
+        reqeust_user = self.request.user
+        curation_status = req_params.get('status', default=ProjectCohortPatient.CurationStatus.completed)
+        
         patients = ProjectCohortPatient.objects.filter(
-            curation_status=ProjectCohortPatient.CurationStatus.completed
-        )
+            curation_status=curation_status
+        ).distinct('patient_id')
 
         if reqeust_user is not None:
             group = reqeust_user.groups.first()
@@ -216,3 +218,43 @@ class PatientView(ListModelViewMixin,
                 patient__patient_id__icontains=search_param)
         patient_ids = patients.values_list('patient__patient_id', flat=True)
         return Response(patient_ids, status=status.HTTP_200_OK)
+
+    
+    @list_route(methods=['post'])
+    def unassign_patient(self, request):
+        """
+        unassings patient assigned to curator
+        """
+        try:
+            data = request.data
+            patient_id = data.get('patient_id', None)
+            curator_id = data.get('curator_id', None)
+            project_id = data.get('project_id', None)
+
+            patient = ProjectCohortPatient.objects.get(
+                project_id=project_id, 
+                patient__patient_id=patient_id, 
+                curation_status = ProjectCohortPatient.CurationStatus.inprogress,
+                curator_id=curator_id)
+            
+            
+            if patient_id is None:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+           
+      
+            patient_templates = PatientChartReview.objects.filter(
+                project_id=project_id, 
+                patient__patient_id=patient_id,                
+                curator_id=curator_id,
+                cohort_id=patient.cohort_id
+            )
+            patient_templates.update(status=PatientChartReview.StatusType.inprogress)
+
+            patient.curator_id = ''
+            patient.curation_status = ProjectCohortPatient.CurationStatus.pending
+            
+            patient.save()
+            
+            return Response('', status=status.HTTP_200_OK)
+        except ProjectCohortPatient.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)

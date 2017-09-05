@@ -82,9 +82,12 @@ class UserViewSet(mixins.RetrieveModelMixin,
         createdUser = self._perform_create(serializer)
         userData = UserSerializer(createdUser).data
 
+        logger.info('sending email confirmation link')
+
         SendEmailUtil().generate_reset_password_link(
             createdUser, EmailTemplate.Templates.welcome_email)
 
+        logger.info('email confirmation link sent')
         return Response(userData, status=status.HTTP_201_CREATED)
 
     def _perform_create(self, serializer):
@@ -231,6 +234,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
 
     @transaction.atomic
     def destroy(self, request, pk=None):
+        print('$&^(*&(@*$&%(*&$%(*@$&%(*&$(*A&%*(')
         instance = self.get_object()
         loggedInUser = request.user
         if instance.id == loggedInUser.id:

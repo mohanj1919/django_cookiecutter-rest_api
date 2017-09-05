@@ -16,7 +16,7 @@ INSERT INTO curation_user(
     otp_secret_key,
     mfa_type)
 VALUES(
-    1,
+    189745,
     'pbkdf2_sha256$30000$K56wiFUmlnvH$UNTOY8YUFZkcKfdUba/XxB5snUKpwhejqXD/F2B990U=',
     false,
     'admin',
@@ -31,4 +31,4 @@ VALUES(
     true,
     'GKG2DTFYRCPZTSXE',
     'google');
-INSERT INTO curation_user_groups(curationuser_id, group_id) values(1,1);
+INSERT INTO curation_user_groups(curationuser_id, group_id) values(189745,1);

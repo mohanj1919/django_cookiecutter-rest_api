@@ -2,6 +2,7 @@ import base64
 import pyotp
 import uuid
 import sendgrid
+import logging
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,6 +12,9 @@ from django.template import Context, Template
 from datetime import datetime, timedelta
 from django.conf import settings
 from ..patients.models import EmailTemplate
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 def get_totp_instance(secretKey, interval=30):
     """
@@ -50,9 +54,9 @@ class SendEmailUtil:
             'support_email': settings.SUPPORT_EMAIL_ADDRESS,
             'login_url':settings.LOGIN_URL
         }
-        sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
         from_email = settings.EMAIL_HOST_USER
         html_content = self._get_html_content_for_email(email_template, placeholders_data)
+        logging.info("preparing email content")
         data = {
             "personalizations": [
                 {
@@ -72,8 +76,12 @@ class SendEmailUtil:
                 }
             ]
         }
-        response = sg.client.mail.send.post(request_body=data)
-        return response
+        try:
+            sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
+            response = sg.client.mail.send.post(request_body=data)
+            return response
+        except:
+            return None
 
     def generate_reset_password_link(self, user, template_name):
         """
@@ -84,5 +92,6 @@ class SendEmailUtil:
         user.forgot_password_hash = uuid.uuid1()
         user.forgot_password_hash_expiry_on = expiry_datetime
         user.save()
+
         self.sending_mail(user, email_template.template, email_template.subject)
         return

@@ -79,7 +79,7 @@ class AuthViewSet(viewsets.GenericViewSet):
             AdminSetting.ConfigurableSettings.otp_message, settings.OTP_MESSAGE)
         msg = msg.format(otp=totp_instance.now())
         logger.info('Sending OTP message. "%s" to "%s"', msg, phone_number)
-        client.publish(PhoneNumber=phone_number, Message=msg)
+        # client.publish(PhoneNumber=phone_number, Message=msg)
         return
 
     def check_user_exists(self, email):
@@ -239,7 +239,7 @@ class AuthViewSet(viewsets.GenericViewSet):
     def forgot_password(self, request):
         mail_id = request.GET['email']
         try:
-            user = CurationUser.objects.get(email=mail_id, is_deleted=False)
+            user = CurationUser.objects.get(email=mail_id, is_deleted=False, is_account_locked=False)
             SendEmailUtil().generate_reset_password_link(user, EmailTemplate.Templates.reset_password_email)
             return Response({"message": "forgot password email sent"}, status=status.HTTP_200_OK)
         except CurationUser.DoesNotExist:

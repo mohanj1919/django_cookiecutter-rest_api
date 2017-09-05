@@ -3,19 +3,19 @@ FROM python:3.5
 ENV PYTHONUNBUFFERED 1
 
 # Requirements have to be pulled and installed here, otherwise caching won't work
-COPY ./requirements /requirements
+COPY ./curation-api/requirements /requirements
 RUN pip install -r /requirements/local.txt
 
 COPY . /usr/src/app/
 
-COPY ./compose/django/entrypoint.sh /entrypoint.sh
-COPY ./compose/django/run_tests.sh /run_tests.sh
+COPY ./curation-api/compose/django/entrypoint.sh /entrypoint.sh
+COPY ./curation-api/compose/django/run_tests.sh /run_tests.sh
 
 RUN sed -i 's/\r//' /entrypoint.sh \
     && sed -i 's/\r//' /run_tests.sh \
     && chmod +x /entrypoint.sh \
     && chmod +x /run_tests.sh
 
-WORKDIR /usr/src/app/
+WORKDIR /usr/src/app/curation-api/
 
 ENTRYPOINT ["/entrypoint.sh"]

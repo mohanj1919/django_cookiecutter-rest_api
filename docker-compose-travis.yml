@@ -12,7 +12,7 @@ services:
       - travis_postgres_data:/var/lib/postgresql/data
       - travis_postgres_backup:/backups
     ports:
-      - "5432"
+      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=mysecretpass
       - POSTGRES_USER=curation
@@ -22,7 +22,7 @@ services:
   app:
     image: api:latest
     build:
-      context: ./
+      context: .
       dockerfile: ./curation-api/compose/django/Dockerfile
     user: django
     env_file: .env

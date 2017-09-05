@@ -25,7 +25,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class UserRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurationUser
-        fields = ('id', 'email', 'mfa_type', 'phone_number', 'is_active')
+        fields = ('id', 'email', 'mfa_type', 'phone_number', 'is_active', 'is_account_locked')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -45,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = CurationUser
         fields = ('id', 'email', 'first_name', 'last_name', 'mfa_type',
                   'password_expiry_on', 'phone_number', 'is_active', 'groups',
-                  'curator_chart_reviews')
+                  'curator_chart_reviews', 'is_account_locked')
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -63,7 +63,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurationUser
         fields = ('id', 'email', 'first_name', 'last_name',
-                  'phone_number', 'mfa_type', 'groups', 'is_active')
+                  'phone_number', 'mfa_type', 'groups', 'is_active', 'is_account_locked')
 
     def create(self, validated_data):
         #  email, password, first_name, last_name
@@ -73,6 +73,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         first_name = data.pop('first_name')
         last_name = data.pop('last_name')
         data.pop('groups')
+        data.pop('is_active', None)
         # phone_number = data.pop('phone_number', None)
         return CurationUser.objects.create_user(email, password, first_name, last_name, **data)
 
@@ -85,6 +86,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         instance.mfa_type = validated_data.get('mfa_type')
         instance.phone_number = validated_data.get('phone_number')
         instance.is_active = validated_data.get('is_active')
+        instance.is_account_locked = validated_data.get('is_account_locked')
         instance.phone_number = validated_data.get('phone_number')
         instance.save()
         return instance

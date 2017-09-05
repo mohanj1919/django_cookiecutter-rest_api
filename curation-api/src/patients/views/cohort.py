@@ -7,8 +7,6 @@ from rest_framework.response import Response
 from ...utilities import ListModelViewMixin, GenericViewSet
 from ..models import Cohort, Patient, ProjectCohort, ProjectCurator
 from ..serializers import CohortSerializer, CohortListCreateSerializer
-# from ...utilities.generic_view_set import CustomGenericAPIView
-# from ...utilities.list_view_mixin import ListModelGenericViewMixin
 
 class CohortView(GenericViewSet,
                  mixins.RetrieveModelMixin,
