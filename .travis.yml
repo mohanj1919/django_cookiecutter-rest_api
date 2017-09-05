@@ -90,7 +90,7 @@ after_success:
     set -x
     # Only do push/deploy/clean if on a trigger branch
 
-    if [[ $BRANCH =~ development ]]; then
+    if [[ $BRANCH =~ development|travis_deploy ]]; then
       echo "Performing deploy for branch $BRANCH"
       eval $(docker run ${DOCKER_AWS_ENV_DEPLOY_USER} betteroutcomes/aws-ecs-deploy aws-assume-role $AWS_ACCOUNT ops-deployer)
 
@@ -122,14 +122,18 @@ after_success:
       echo "No deploy for branch $BRANCH"
     fi
 
+  - |
+    # fail fast
+    set -e
+
     export DATABASE_URL=$PROD_DATABASE_URL
 
     # migrate the schema changes in production Database
     docker-compose -f docker-compose-travis.yml run app
 
-
 after_script:
-    - docker-compose run pipeline clean_schemas
+    - echo "success"
+    # - docker-compose run pipeline clean_schemas
 
 notifications:
   slack: betteroutcomes:UHCKCWnX6yQbwFfcBRl2iYn7
