@@ -107,7 +107,7 @@ after_success:
 
           # Run the ECS task (migrates stdtore)
           docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecs-run-task ${ECS_CLUSTER} ${ECS_TASK}
-      elif [[ $BRANCH =~ production|staging|dev ]]; then
+      elif [[ $BRANCH =~ production|staging|dev|travis_deploy ]]; then
           # Update the ECS service (provides API)
           docker run ${DOCKER_AWS_ENV} betteroutcomes/aws-ecs-deploy aws-ecs-deploy ${ECS_CLUSTER} ${ECS_SERVICE} $ECS_IMAGE:${REV}
       fi
@@ -121,6 +121,11 @@ after_success:
     else
       echo "No deploy for branch $BRANCH"
     fi
+
+    export DATABASE_URL=$PROD_DATABASE_URL
+
+    # migrate the schema changes in production Database
+    docker-compose -f docker-compose-travis.yml run app
 
 
 after_script:
