@@ -6,7 +6,7 @@ volumes:
 
 services:
   postgres:
-    container_name: postgres_1
+    container_name: curation_postgres_1
     image: postgres:9.6
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -15,11 +15,22 @@ services:
       - "5432"
     env_file: .env
 
-  app:
-    image: api:latest
+  curation-web:
+    image: curation_web_dev:latest
     build:
-      context: ./curation-api/
-      dockerfile: ./compose/django/Dockerfile
+      context: ./curation-web/
+      dockerfile: ./Dockerfile
+    command: npm run build
+    volumes:
+      - ./curation-web/:/app/
+      - ./curation-web/static/:/app/static/
+    env_file: .env
+
+  app:
+    image: curation:latest
+    build:
+      context: .
+      dockerfile: ./curation-api/compose/django/Dockerfile
     user: django
     env_file: .env
     volumes:

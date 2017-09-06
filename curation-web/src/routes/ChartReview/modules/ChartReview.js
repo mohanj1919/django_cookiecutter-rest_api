@@ -1,6 +1,7 @@
 import axios from '../../../lib/axios';
 import _ from 'lodash';
 import { browserHistory } from 'react-router';
+import config from '../../../config'
 import moment from 'moment';
 import {
   HIDE_BANNER,
@@ -133,7 +134,7 @@ export function handleAnswerEvent(event, id, question_id) {
       curator: getState().global.toJS().emailid,
       question_responses: tempAnswers
     };
-    axios.post('/clinical/chartreview/', request)
+    axios.post(config.api.get_chart_review, request)
       .then(function (response) { }).catch(function (err) {
         dispatch({
           type: TOGGLE_NOTIFICATION,
@@ -182,7 +183,7 @@ export function SelectTemplate(e, template) {
 export function GetAvailableCRFS(projectId) {
   return (dispatch, getState) => {
     try {
-      let url = `/clinical/projects/${projectId}/`;
+      let url = `${config.api.projects}${projectId}/`;
       axios.get(url).then(function (response) {
         let availableCRFS = response.data.project_crf_templates;
 
@@ -342,7 +343,7 @@ var sortarray = function (arr, questions) {
 
 export function GetQuestionsByTemplateId(templateId) {
   return (dispatch, getState) => {
-    let url = `/clinical/crftemplates/${templateId}/`;
+    let url = `${config.api.get_crf_templates}${templateId}/`;
     dispatch({
       type: TOGGLE_LOADING,
       payload: true
@@ -526,7 +527,7 @@ export function CompleteCuration() {
 
 function _completeCuration() {
   return (dispatch, getState) => {
-    axios.post('/clinical/patients/complete_curation/', {
+    axios.post(config.api.post_complete_curation, {
       patient_id: getState().chartreview.patientData.patient_id,
       project_id: getState().chartreview.ProjectId,
       cohort_id: getState().chartreview.cohortID
@@ -624,7 +625,7 @@ export function SubmitTemplate(cb) {
       showMessage: `Are you sure you want to submit CRF?`,
       messageTitle: 'Submit CRF',
       successCb: function () {
-        let url = '/clinical/chartreview/update_chart_review/';
+        let url = config.api.post_update_chart_review;
         let request = {
           patient_id: getState().chartreview.patientData.id,
           crf_template_id: getState().chartreview.currentTemplateId,
@@ -668,7 +669,7 @@ export function GetPatientsIDList(search) {
     let cohortId = getState().chartreview.cohortID
     let searchCriteria = search ? search.replace(/^[ ]+|[ ]+$/g, '') : ''
     if (cohortId) {
-      let patientsIdUrl = searchCriteria ? `/clinical/domains/${cohortId}/get_patient_ids/?searchParam=${searchCriteria}` : `/clinical/domains/${cohortId}/get_patient_ids/`
+      let patientsIdUrl = searchCriteria ?  `${config.api.cohort_patient_ids.replace('_cohortId',cohortId)}?searchParam=${searchCriteria}` : `${config.api.cohort_patient_ids.replace('_cohortId',cohortId)}`
       axios.get(patientsIdUrl)
         .then(function (response) {
           dispatch({
@@ -885,7 +886,7 @@ var _saveResponse = function (answers) {
       curator: getState().global.toJS().emailid,
       question_responses: answers
     };
-    axios.post('/clinical/chartreview/', request)
+    axios.post(config.api.get_chart_review, request)
       .then(function (response) { }).catch(function (err) {
         dispatch({
           type: TOGGLE_NOTIFICATION,
@@ -961,7 +962,7 @@ const ACTION_HANDLERS = {
     let patientData = Object.assign({}, state.patientData)
     let encounters = []
     state.patientData.encounters.map((ed, i) => {
-      if (ed.encounter_id == action.payload) {
+      if (ed.id == action.payload) {
         ed.collapse = action.status
       }
       encounters.push(ed)

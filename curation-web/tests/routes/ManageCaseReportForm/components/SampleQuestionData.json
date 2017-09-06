@@ -1,0 +1,50 @@
+[
+    {
+        "id": 421,
+        "question_id": 11,
+        "text": "Does the patient have heart failure?",
+        "question_type": "single",
+        "responses": "Yes,No,Unknown",
+        "parent_question": "",
+        "parent_response": null,
+        "note": null,
+        "parent_condition": "",
+        "is_active": true
+    },
+    {
+        "id": 422,
+        "question_id": 12,
+        "text": "Does the patient have valvular heart disease?",
+        "question_type": "single",
+        "responses": "Yes,No,Unknown",
+        "parent_question": "",
+        "parent_response": null,
+        "note": null,
+        "parent_condition": "",
+        "is_active": true
+    },
+    {
+        "id": 423,
+        "question_id": 13,
+        "text": "Does the patient have cardiac dysrhythmias and conduction disorders?",
+        "question_type": "single",
+        "responses": "Yes,No,Unknown",
+        "parent_question": "",
+        "parent_response": null,
+        "note": null,
+        "parent_condition": "",
+        "is_active": true
+    },
+    {
+        "id": 428,
+        "question_id": 18,
+        "text": "Does the patient have dementia?",
+        "question_type": "single",
+        "responses": "Yes,No,Unknown",
+        "parent_question": "",
+        "parent_response": null,
+        "note": null,
+        "parent_condition": "",
+        "is_active": true
+    }
+]

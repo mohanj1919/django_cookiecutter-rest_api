@@ -1,4 +1,4 @@
-import axios from 'lib/axios';
+import axios from '../../../lib/axios';
 import { HIDE_BANNER, TOGGLE_NOTIFICATION, TOGGLE_LOADING } from '../../../modules/global.js';
 import { ValidateUserEmail } from '../../../lib/utils.js';
 import config from '../../../config';
@@ -157,8 +157,6 @@ if (!saveObj.groups) {
 let url = getState().userslist.selectedObject.id
   ? `/users/${getState().userslist.selectedObject.id}/`
   : `/users/`;
-
-
 
 dispatch({ type: TOGGLE_LOADING, payload: true })
 if (getState().userslist.selectedObject.id) {
@@ -395,7 +393,7 @@ export function toggleEmailReset() {
 export function toggleActive(e) {
   return (dispatch, getState) => {
     let currentObject = getState().userslist.selectedObject;
-    currentObject.is_active = e;
+    currentObject.is_account_locked = e;
 
     dispatch({
       type: SET_PROP,

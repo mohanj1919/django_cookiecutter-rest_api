@@ -61,20 +61,15 @@ before_install:
 install:
   - env > .env
   - cat .env.example >> .env
-  - |
-    nvm install 6.10.0
-    nvm use 6.10.0
-  - node --version
-  - cd curation-web
-  - npm i
+  - docker-compose -f docker-compose-travis.yml build curation-web
+
 
 script:
   # Run UI tests
   - |
-    # faile fast
     set -e
-    npm run build
-    cd ..
+    docker-compose -f docker-compose-travis.yml run curation-web
+
   # Build with docker-compose
   - docker-compose -f docker-compose-travis.yml build
   # Run tests with docker-compose

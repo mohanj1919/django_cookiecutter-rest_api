@@ -21,7 +21,7 @@ class ShowPatients extends Component {
         var activeFormatter = (cell, row) => {
             return (
                 <div>
-                    {this.props.searchParams.status!=config.PATIENT_STATUS.INPROGRESS?
+                    {_.get(this.props.searchParams, 'status', '') != config.PATIENT_STATUS.INPROGRESS?
                     <div>
                         <Button bsStyle='primary' title={'View Patient'} onClick={() => this.props.ShowPatientDetails(row) }>
                             <i className='fa fa-eye' aria-hidden="true"></i>
@@ -40,7 +40,6 @@ class ShowPatients extends Component {
                          onClick={()=>this.props.Unassign(row)}><i className='fa fa-times'></i> Unassign</Button>
                     </div> 
                     }
-
                 </div>
             );
         }
@@ -88,8 +87,8 @@ class ShowPatients extends Component {
                                 <label>Patient Id</label>
                                 <AsyncTypeahead
                                     onSearch={(search) => this.props.GetPatients(search) }
-                                    onChange={(search) => { search.type = 'patient'; this.props.FilterPatients(search) } }
-                                    name='patient'
+                                    onChange={(search) => { search.type = 'patient_id'; this.props.FilterPatients(search) } }
+                                    name='patient_id'
                                     options={this.props.availablePatients ? this.props.availablePatients : []}
                                     />
                             </div>

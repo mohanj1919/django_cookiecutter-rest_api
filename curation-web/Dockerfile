@@ -1,10 +1,9 @@
-FROM node:6.11.0
-
-RUN apt-get update
+FROM node:8.4.0
 
 WORKDIR /tmp
 ADD package.json /tmp/
-RUN npm install --quiet
+RUN rm -rf node_modules
+RUN npm install --silent
 
 RUN mkdir -p /app
 RUN mv node_modules /app/node_modules/

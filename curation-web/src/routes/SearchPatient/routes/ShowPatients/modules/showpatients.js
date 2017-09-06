@@ -8,7 +8,7 @@ import Papa from 'papaparse'
 import {
   browserHistory
 } from 'react-router'
-import axios from 'lib/axios'
+import axios from '../../../../../lib/axios'
 import _ from 'lodash'
 
 const SET_PROP = 'SET_PROP';
@@ -37,10 +37,11 @@ var PageChange = (page, sizePerPage) => {
 var GetPatients = (search) => {
   return (dispatch, getState) => {
     let params = {
-      searchParam: search
+      searchParam: search,
+      status: getState().showpatients.searchParams.status
     }
     axios.get(config.api.get_patient_ids, {
-      param: { ...params
+      params: { ...params
       }
     }).then(function (response) {
       if (response.status == config.HTTP_Status.success) {
@@ -159,18 +160,31 @@ var Unassign = (row) =>{
       showMessage: `Are you sure want to unassign patient from curator?`,
       messageTitle: 'UnAssign Patient',
       successCb: function () {
-        axios.post('/clinical/patients/unassign_patient', {
+        dispatch({
+          type: HIDE_BANNER
+        })
+        axios.post(config.api.unassign_patient, {
           "patient_id": row.patient_id,
           "curator_id": row.curator_id,
           "project_id": row.project_id
-          }).then(function(response){
+          }).then(function(response){            
             dispatch(_filterPatients(getState().showpatients.searchParams))
-        }).catch(function(err){
-          console.log('ERROR: ', err)
-        }).then(function(){
-          dispatch({
-            type: HIDE_BANNER
+            
+            dispatch({
+              type: TOGGLE_NOTIFICATION,
+              showBanner: true,
+              showTime: 3000,
+              showType: 'success',
+              showMessage: 'Successfully unassigned patient'
           })
+        }).catch(function(err){
+           dispatch({
+              type: TOGGLE_NOTIFICATION,
+              showBanner: true,
+              showTime: 3000,
+              showType: 'error',
+              showMessage: 'Failed unassigning patient'
+            })
         })
       }
     })
@@ -242,10 +256,10 @@ var _filterPatients = (params) => {
 }
 
 var FilterPatients = (e) => {
-  return (dispatch, getState) => {
+  return (dispatch, getState) => {    
     let searchParams = getState().showpatients.searchParams || {};
     if (e) {
-      searchParams[e.type] = e.type != 'patient' ? (e[0] ? e[0].name : null) : e[0];
+      searchParams[e.type] = e.type != 'patient_id' ? (e[0] ? e[0].name : null) : e[0];
       dispatch({
         type: SET_PROP,
         payload: {
@@ -253,7 +267,7 @@ var FilterPatients = (e) => {
           value: searchParams
         }
       })
-    }   
+    }
     dispatch(_filterPatients(searchParams))
   }
 }
@@ -329,7 +343,8 @@ const ACTION_HANDLERS = {
 }
 
 const initialState = {
-  pageNumber: 1
+  pageNumber: 1,
+  searchParams: {}
 }
 
 export default function showPatientsReducer(state = initialState, action) {

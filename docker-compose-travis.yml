@@ -1,16 +1,16 @@
 version: '2'
 
 volumes:
-  travis_postgres_data: {}
-  travis_postgres_backup: {}
+  postgres_data: {}
+  postgres_backup: {}
 
 services:
   postgres:
-    container_name: postgres_travis_1
+    container_name: curation_postgres_travis_1
     image: postgres:9.6
     volumes:
-      - travis_postgres_data:/var/lib/postgresql/data
-      - travis_postgres_backup:/backups
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backup:/backups
     ports:
       - "5432"
     environment:
@@ -19,8 +19,18 @@ services:
       - POSTGRES_HOST=postgres
       - POSTGRES_DB=curation
 
+  curation-web:
+    build:
+      context: ./curation-web/
+      dockerfile: ./Dockerfile
+    command: npm run test && npm run build
+    volumes:
+      - ./curation-web/:/app/
+      - ./curation-web/static/:/app/static/
+    env_file: .env
+
   app:
-    image: api:latest
+    image: curation:latest
     build:
       context: .
       dockerfile: ./curation-api/compose/django/Dockerfile

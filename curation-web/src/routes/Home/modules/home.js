@@ -1,5 +1,5 @@
-import axios from 'lib/axios'
-import { TOGGLE_NOTIFICATION } from '../../../modules/global.js';
+import axios from '../../../lib/axios'
+import { HIDE_BANNER, TOGGLE_NOTIFICATION, TOGGLE_LOADING } from '../../../modules/global.js';
 
 const LOAD_PROJECTS = 'LOAD_PROJECTS'
 const SET_PROPS = 'SET_PROPS'
@@ -37,7 +37,7 @@ export function GetCuratorProjects() {
     if (getState().home.sortName) {
       getUrl += `&sortName=${getState().home.sortName}&sortOrder=${getState().home.sortOrder}`;
     }
-
+    dispatch({ type: TOGGLE_LOADING, payload: true })
     axios.get(getUrl)
       .then(function (response) {
         dispatch({
@@ -53,6 +53,8 @@ export function GetCuratorProjects() {
           showType: 'error',
           showMessage: 'Failed loading Projects'
         })
+      }).then(function(){
+        dispatch({ type: TOGGLE_LOADING, payload: false })
       })
   }
 }

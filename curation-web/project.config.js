@@ -1,7 +1,7 @@
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const HOST = process.env.HOST || 'localhost';
-const PORT = process.env.PORT || '3000';
-const URL = process.env.URL || 'http://localhost:8000';
+const PORT = process.env.PORT || '80';
+const URL = process.env.URL || 'http://localhost:80';
 
 console.log(process.env.URL)
 module.exports = {

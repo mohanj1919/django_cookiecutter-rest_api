@@ -559,3 +559,10 @@
 .banner-modal-message{
     word-wrap: break-word;
 }
+.table-search-box{
+    width: 250px;
+    float: right;
+    input[type=text]{
+        font-size: 13px;
+    }
+}

@@ -50,7 +50,6 @@ class EmailTemplateDesigner extends Component {
                 onChange={(text) => this.props.TextEdited(text, this.props.selectedTemplateData.id, this.reactQuillRef) }
                 onFocus={this.props.SetCurrentInstance(this.reactQuillRef) } name='template'
                 ref={(el) => { this.reactQuillRef = el } } />
-              {this.props.errorText ? <HelpBlock className='error'>{this.props.errorText}</HelpBlock> : null}
             </FormGroup>
             <div className='submit-cancel-btn'>
               <Button onClick={() => this.props.SaveTemplateDetails() } disabled={this.props.selectedTemplateData ? false : true} bsStyle='success'>Submit</Button>

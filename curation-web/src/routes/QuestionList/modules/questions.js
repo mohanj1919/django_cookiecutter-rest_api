@@ -1,4 +1,4 @@
-import axios from 'lib/axios'
+import axios from '../../../lib/axios'
 import {HIDE_BANNER, TOGGLE_NOTIFICATION, TOGGLE_LOADING} from '../../../modules/global.js'
 import _ from 'lodash'
 const LOAD_QUESTIONS_DATA = 'LOAD_QUESTIONS_DATA'

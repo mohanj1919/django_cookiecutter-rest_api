@@ -11,7 +11,7 @@ export class CuratorProjects extends React.Component {
     render() {
         var customSearchField = () => {
             return (
-                <InputGroup className='search-projects'>
+                <InputGroup className='search-projects table-search-box'>
                     <input type='text' placeholder='Search Projects' onChange={(e) => this.props.SearchProject(e)} className='form-control' />
                     <InputGroup.Addon><i className='fa fa-search'></i></InputGroup.Addon>
                 </InputGroup>

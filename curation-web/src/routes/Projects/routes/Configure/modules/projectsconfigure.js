@@ -1,4 +1,4 @@
-import axios from 'lib/axios';
+import axios from '../../../../../lib/axios';
 import config from '../../../../../config';
 import {
   HIDE_BANNER,

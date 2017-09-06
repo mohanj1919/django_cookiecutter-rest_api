@@ -7,7 +7,7 @@ export default class PasswordResetForm extends Component {
     return (
       <div>
         <h3>Set Password</h3>
-        <form>
+        <form onSubmit={(evt) => {this.props.ResetPasswordSuccess(); evt.preventDefault();}}>
 
           <FieldGroup
             id="formControlsPassword"
@@ -38,8 +38,7 @@ export default class PasswordResetForm extends Component {
 
           <div className="row">
             <div className="col-md-6">
-                <Button bsStyle="warning"
-                onClick={() => this.props.ResetPasswordSuccess()}>Submit</Button>
+                <Button bsStyle="warning" type='submit'>Submit</Button>
             </div>
           </div>
         </form>

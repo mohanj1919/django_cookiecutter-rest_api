@@ -13,27 +13,18 @@ describe('CaseReportForms Component', () => {
 let router = {
     push : function(arg) {}
 };
-let pa = {}
+let pa = 1
 let chil = null
-let tableData = [{
-    //     "id": 2,
-	// 	"text": "Test",
-	// 	"description": "Desc",
-	// 	"created_on": "2017-08-29T14:45:53.419190Z",
-	// 	"updated_on": "2017-08-29T14:45:53.419267Z"
-	// },
-	// {
-	// 	"id": 5,
-	// 	"text": "Pain",
-	// 	"description": "Patient with Diabetes",
-    //     ""
-	// 	"created_on": "2017-08-29T16:28:28.868622Z",
-	// 	"updated_on": "2017-08-29T16:28:28.868644Z"
-}]
+let tableData = [
+   {id: 12, name: "First CRF Test", description: "Free will"},
+   {id: 13, name: "Second CRF Test", description: "abcd"},
+   {id: 14, name: "3rd CRF Test", description: "abcde"},
+   {id: 15, name: "4th CRF Test", description: "abcdef"}
+]
 
 const wrapper = mount(<CaseReportForms
     router = {router}
-    page= {pa}
+    page= {1}
     children = {chil}
     CrfData = {tableData}
 
@@ -41,11 +32,11 @@ const wrapper = mount(<CaseReportForms
     SearchCRF= {function(arg) {}}
     GetCRFs= {function() {}}
     SortChange= {function(arg) {}}    
-    TotalCount= {function() {}}
+    TotalCount= {1}//{function() {}}
     DeleteModal= {function(arg) {}}
     />)
 
-    describe('should render CRF table ', () => {
+    describe('should render CRF table container', () => {
         
         it('should render crf container', () => {
             expect(wrapper.find('.app-body')).toExist
@@ -55,7 +46,28 @@ const wrapper = mount(<CaseReportForms
             expect(wrapper.find('.add-case-report btn btn-default')).toExist
         })
 
-         it(" should render table, tableheader, tablebody, tablefooter", () => {
+        it('should render search crf', () => {
+            expect(wrapper.find('.form-control')).toExist
+        })
+
+    describe('should render the whole table', () => {
+
+        it("should render table", () => {
+            expect(wrapper.find('.container').find('table')).toExist
+        })
+        it("should render tableheader", () => {
+            expect(wrapper.find('.container').find('table thead')).toExist
+        })
+        it("should render tablebody", () => {
+            expect(wrapper.find('.container').find('table tbody')).toExist
+        })
+        it("should render tablefooter", () => {
+            expect(wrapper.find('.container').find('table tfoot')).toExist
+        })
+
+    })
+
+         it("should render table, tableheader, tablebody, tablefooter", () => {
             expect(wrapper.find('.container').find('table')).toExist
 
             expect(wrapper.find('.container').find('table thead')).toExist
@@ -83,7 +95,18 @@ const wrapper = mount(<CaseReportForms
                     //    expect(count).toEqual(5);
          })
 
+         it('should render all sampleData in table', () => {
 
+            wrapper.find('.container').find('tbody tr').forEach((item, i) => {
+                 let crf = tableData[i];        //our sampledata      
+                let tab = ['CRF Name', 'CRF Description', 'Total Question'];          
+                 item.find('td span').forEach((foo, j) => {
+                        it('should render each item in sampledata', () =>{
+                                 expect(foo.text()).toEqual(crf[tab[j]])
+                        })
+                  })                
+             })  
+         })
 
     })
 })

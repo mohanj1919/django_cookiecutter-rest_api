@@ -60,11 +60,12 @@ class ChartReview extends Component {
                     </DropdownButton>
                   </div>
                   : null}
+                  
 
                 {this.props.patientData ? !_.isEmpty(this.props.availableCRFS) ? <div id='crf-tabs'>
                   <form className='render-template'>
                     <div className={'questions-content'}>
-                      <div className={this.props.availableCRFS.disabled ? 'disable-form' : null}>
+                      <div className={this.props.isReadOnly ? 'disable-form' : null}>
                         <CRFQuestion
                           templateId={this.props.availableCRFS.id}
                           currentTemplateId={this.props.currentTemplateId}

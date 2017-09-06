@@ -1,4 +1,4 @@
-import axios from 'lib/axios'
+import axios from '../../../lib/axios'
 import {HIDE_BANNER, TOGGLE_NOTIFICATION, TOGGLE_LOADING} from '../../../modules/global.js';
 import config from '../../../config'
 const CRFS_LIST = 'CRFS_LIST'
@@ -6,6 +6,7 @@ const DELETE_MODAL_TOGGLE = 'DELETE_MODAL_TOGGLE'
 const DELETE_CONFIRMATION = 'DELETE_CONFIRMATION'
 const SEARCH_CRF = 'SEARCH_CRF'
 const SET_PROPS = 'SET_PROPS'
+const CLEAR_DATA = 'CLEAR_DATA'
 
 export function GetCRFs() {
   return (dispatch, getState) => {
@@ -141,6 +142,13 @@ export function SearchCRF(eve) {
     dispatch(GetCRFList())
   }
 }
+
+export function ClearData() {
+  return (dispatch) => {
+    dispatch({ type: CLEAR_DATA })
+  }
+}
+
 const ACTION_HANDLERS = {
   [CRFS_LIST]: (state, action) => {
     let crfs = [];
@@ -161,13 +169,17 @@ const ACTION_HANDLERS = {
   },
   [SET_PROPS]: (state, action) => {
     return Object.assign({}, state, { [action.payload.type]: action.payload.value })
+  },
+  [CLEAR_DATA]: (state, action) => {
+    return Object.assign({}, state, {...initialState})
   }
 }
 const initialState = {
   crfData: null,
   deleteModal: null,
   showDeleteModal: false,
-  deletableCrfId: null
+  deletableCrfId: null,
+  searchParam: ''
 }
 export default function caseReportFormsReducer(state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]

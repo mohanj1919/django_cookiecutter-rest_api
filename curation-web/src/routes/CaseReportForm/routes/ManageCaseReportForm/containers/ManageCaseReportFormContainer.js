@@ -19,11 +19,11 @@ import { OnFileUpload,
     LoadQuestion,
     CancelModal } from '../modules/manageCaseReportForm'
 
-const mapStateToProps = (state) => ({
+export const mapStateToProps = (state) => ({
     ...state.managecasereportform
 })
 
-const mapDispatchToProps = {
+export const mapDispatchToProps = {
     OnFileUpload,
     UploadClick,
     RemoveFile,

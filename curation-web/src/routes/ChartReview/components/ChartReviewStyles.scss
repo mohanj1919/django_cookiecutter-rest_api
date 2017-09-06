@@ -215,8 +215,7 @@
 
 .render-template {
     .questions-content {
-        max-height: 600px;
-        margin-bottom: 30px;
+        max-height: 640px;
         overflow: auto;
     }
     .crfs-completed {
@@ -414,4 +413,7 @@ select#selectSection{
 }
 #selectSection{
     cursor: pointer;
+}
+.annotation-controls{
+    clear: both
 }

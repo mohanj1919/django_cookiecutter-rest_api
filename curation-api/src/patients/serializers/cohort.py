@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from ...users.models import CurationUser
 from ...users.serializers.userSerializer import IsCuratorExists
@@ -22,6 +23,13 @@ class CohortSerializer(serializers.ModelSerializer):
 
 
 class CohortListCreateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(validators=[
+        UniqueValidator(
+            queryset=Cohort.objects.all(),
+            message="Cohort with this name already exists.",
+            lookup='iexact')
+    ])
+
     class Meta:
         model = Cohort
         fields = ('id', 'name', 'description')

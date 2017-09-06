@@ -1,4 +1,4 @@
-import axios from 'lib/axios';
+import axios from '../../../../../lib/axios';
 import {HIDE_BANNER, TOGGLE_NOTIFICATION, TOGGLE_LOADING} from '../../../../../modules/global.js';
 import config from '../../../../../config';
 import { browserHistory } from 'react-router'

@@ -82,7 +82,7 @@ export default class CRFQuestions extends Component {
             </div>
           </div>
         }
-        <div>
+        <div className='annotation-controls'>
           {q.validationState ?
             <h5 className='text-danger'>* This field is required</h5> : null
           }

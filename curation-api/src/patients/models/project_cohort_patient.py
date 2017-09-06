@@ -33,7 +33,7 @@ class ProjectCohortPatient(BaseModel):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name='related_cohort_patient')
     patient = models.ForeignKey(
-        Patient, on_delete=models.CASCADE, related_name='related_project_cohort')
+        Patient, on_delete=models.CASCADE, related_name='related_project_cohort', null=True)
     curator = models.ForeignKey(CurationUser, on_delete=models.CASCADE,
                                 related_name='related_project_cohort_patients', null=True)
     curation_status = models.CharField(max_length=20, choices=CurationStatus.choices,

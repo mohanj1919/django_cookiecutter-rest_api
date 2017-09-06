@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../../../../scss/style.scss'
 import './style.scss'
 
-import {Button, Modal, FormGroup, ControlLabel, FormControl, HelpBlock, ButtonToolbar, ToggleButtonGroup, ToggleButton} from 'react-bootstrap';
+import {Button, Modal, FormGroup, ControlLabel, FormControl, HelpBlock, ButtonToolbar, InputGroup, ToggleButtonGroup, ToggleButton} from 'react-bootstrap';
 import FieldGroup from '../../../components/FieldGroup';
 import FontAwesome from 'react-fontawesome';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -86,12 +86,10 @@ class UsersList extends Component {
     }
     var customSearchField = (props) => {
       return (
-        <div className="input-group user-search-field pull-right">
-          <input type='text' placeholder='Search users' onKeyUp={this.props.SearchUser} className='form-control' />
-          <span className="input-group-addon">
-            <i className="fa fa-search"></i>
-          </span>
-        </div>
+          <InputGroup className='search-questions table-search-box'>
+              <input type='text' placeholder='Search users' onKeyUp={this.props.SearchUser} className='form-control' />
+              <InputGroup.Addon><i className="fa fa-search"></i></InputGroup.Addon>
+          </InputGroup>
       );
     }
     var options = {
@@ -263,10 +261,10 @@ class UsersList extends Component {
                     <FormGroup>
                       <ControlLabel>Status</ControlLabel>
                        <ButtonToolbar>
-                            <ToggleButtonGroup type="radio" name="options" defaultValue={this.props.selectedObject.is_active}
+                            <ToggleButtonGroup type="radio" name="options" defaultValue={this.props.selectedObject.is_account_locked}
                                  onChange={(e)=>this.props.toggleActive(e)}>
-                                <ToggleButton value={true}>Active</ToggleButton>
-                                <ToggleButton value={false}>InActive</ToggleButton>
+                                <ToggleButton value={false}>Active</ToggleButton>
+                                <ToggleButton value={true}>InActive</ToggleButton>
                             </ToggleButtonGroup>  
                         </ButtonToolbar>
                     </FormGroup>:null}

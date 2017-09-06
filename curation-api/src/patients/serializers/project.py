@@ -91,6 +91,17 @@ class ProjectCreateSeralizer(serializers.Serializer):
     class Meta:
         fields = ('name', 'description', 'curators', 'cohorts', 'crf_templates')
 
+    def create_project_cohort_patient(self, cohort_ids, project_id, created_by):
+        prepared_project_patients = []
+        for cohort_id in cohort_ids:
+            prepared_project_patient = ProjectCohortPatient(
+                project_id=project_id,
+                cohort_id=cohort_id,
+                created_by=created_by
+            )
+            prepared_project_patients.append(prepared_project_patient)
+        ProjectCohortPatient.objects.bulk_create(prepared_project_patients)
+
     def create(self, validated_data):
         """
         Creates project with validated data
@@ -101,6 +112,9 @@ class ProjectCreateSeralizer(serializers.Serializer):
         _cohort_ids = validated_data.get("cohorts", [])
         _curator_ids = validated_data.get("curators", [])
         _crf_templates = validated_data.get("crf_templates", [])
+
+        # create entry in curation_project_cohort_patient table for current project
+        self.create_project_cohort_patient(_cohort_ids, created_project.id, request.user.email)
 
         # create project_cohorts
         ProjectCohortSerializer.create_lambda(created_project.id, _cohort_ids)

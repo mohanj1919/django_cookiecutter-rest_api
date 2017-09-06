@@ -1,4 +1,4 @@
-import axios from 'lib/axios';
+import axios from '../../../lib/axios';
 import _ from 'lodash';
 
 import {
@@ -92,8 +92,18 @@ export function CancelTemplateDetails() {
 
 export function SaveTemplateDetails() {
   return (dispatch, getState) => {
-    dispatch({ type: VALIDATE_TEMPLATE })
-    if (getState().emailtemplatedesigner.isValid) {
+    let valid = true;
+    if (!getState().emailtemplatedesigner.selectedTemplateData.subject
+      || !(getState().emailtemplatedesigner.selectedTemplateData.subject.replace(/^[ ]+|[ ]+$/g, ''))) {
+      valid = false;
+      dispatch({ type: TOGGLE_NOTIFICATION, payload: true, showTime: 3000, showType: 'error', showMessage: 'Subject is required' })
+    }
+    if (!getState().emailtemplatedesigner.selectedTemplateData.template
+      || !(getState().emailtemplatedesigner.selectedTemplateData.template.replace(/^[ ]+|[ ]+$/g, ''))) {
+      valid = false;
+      dispatch({ type: TOGGLE_NOTIFICATION, payload: true, showTime: 3000, showType: 'error', showMessage: 'Template text is required' })
+    }
+    if (valid) {
       dispatch({ type: TOGGLE_LOADING, payload: true })
       axios.put(`/clinical/emailtemplates/${getState().emailtemplatedesigner.selectedTemplateData.id}/`, getState().emailtemplatedesigner.selectedTemplateData)
         .then(function (response) {
@@ -134,38 +144,24 @@ const ACTION_HANDLERS = {
   },
   [VALIDATE_TEMPLATE]: (state, action) => {
     let valid = true;
-    let errorText = '';
-    if (state.selectedTemplateData.template) {
-      let placeholders = state.selectedTemplateData.place_holders ? state.selectedTemplateData.place_holders.split(',') : []
-      if (placeholders.length > 0) {
-        let missedPlaceHolders = []
-        placeholders.map((ph, j) => {
-          if (state.selectedTemplateData.template.indexOf(ph.replace(/^[ ]+|[ ]+$/g, '')) == -1) {
-            missedPlaceHolders.push(ph)
-          }
-        })
-        if (missedPlaceHolders && missedPlaceHolders.length > 0) {
-          missedPlaceHolders = missedPlaceHolders.join(',')
-          valid = false
-          errorText = missedPlaceHolders + ' missing in template'
-        }
-      }
-    }
-    else {
+    if (!state.selectedTemplateData.subject) {
       valid = false;
-      errorText = 'Template text is required'
+      dispatch({ type: TOGGLE_NOTIFICATION, payload: true, showTime: 3000, showType: 'error', showMessage: 'Subject is required' })
     }
+    if (!state.selectedTemplateData.template || !(state.selectedTemplateData.template.replace(/^[ ]+|[ ]+$/g, ''))) {
+      valid = false;
+      dispatch({ type: TOGGLE_NOTIFICATION, payload: true, showTime: 3000, showType: 'error', showMessage: 'Template text is required' })
+    }
+
     return Object.assign({}, state, {
-      isValid: valid,
-      errorText
+      isValid: valid
     })
   },
   [TEXT_EDITED]: (state, action) => {
     if (state.templateData && action.payload && !_.isUndefined(action.payload.value)) {
       let tempData = Object.assign({}, state.selectedTemplateData, {
         [action.payload.key]: action.payload.value,
-        valid: action.payload.key == 'template' ? true : state.valid,
-        errorText: action.payload.key == 'template' ? null : state.errorText
+        valid: action.payload.key == 'template' ? true : state.valid
       })
       if (action.payload.instance) {
         return Object.assign({}, state, { selectedTemplateData: tempData, currentInstance: action.payload.instance })
@@ -198,7 +194,7 @@ const ACTION_HANDLERS = {
           }
         })
       }
-      return Object.assign({}, state, { selectedTemplateData: selectedTemplateData, valid: true, errorText: null })
+      return Object.assign({}, state, { selectedTemplateData: selectedTemplateData, valid: true })
     }
   }
 }

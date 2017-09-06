@@ -7,6 +7,7 @@ import './CaseReportFormsStyles.scss'
 
 class CaseReportForms extends Component {
     componentWillMount() {
+        this.props.ClearData()
         this.props.GetCRFs()
     }
 
@@ -40,8 +41,11 @@ class CaseReportForms extends Component {
         }
         var customSearchField = () => {
             return (
-                <InputGroup className='search-questions'>
-                    <input type='text' placeholder='Search CRF' onChange={(e) => this.props.SearchCRF(e) } className='form-control'/>
+                <InputGroup className='search-questions table-search-box'>
+                    <input type='text' placeholder='Search CRF' 
+                    onChange={(e) => this.props.SearchCRF(e) }
+                    defaultValue={this.props.searchParam || ''} 
+                    className='form-control'/>
                     <InputGroup.Addon><i className="fa fa-search"></i></InputGroup.Addon>
                 </InputGroup>
             );

@@ -15,7 +15,7 @@ class PatientManager(models.Manager):
     def get_patient_from_pending_list(self, cohort_id):
         return self.filter(curation_status=Patient.StatusType.pending,
                            is_active=True,
-                           cohort_id=cohort_id).first()
+                           cohort_id=cohort_id).order_by('created_on').first()
 
     def get_patient_by_id(self, cohort_id, patient_id):
         return get_object_or_404(Patient,

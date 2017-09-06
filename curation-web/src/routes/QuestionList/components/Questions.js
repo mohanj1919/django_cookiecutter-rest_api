@@ -30,7 +30,7 @@ class Questions extends Component {
         }
         var customSearchField = () => {
             return (
-                <InputGroup className='search-questions'>
+                <InputGroup className='search-questions table-search-box'>
                     <input type='text' placeholder='Search Questions' onChange={(e) => this.props.SearchQuestion(e) } className='form-control'/>
                     <InputGroup.Addon><i className='fa fa-search'></i></InputGroup.Addon>
                 </InputGroup>

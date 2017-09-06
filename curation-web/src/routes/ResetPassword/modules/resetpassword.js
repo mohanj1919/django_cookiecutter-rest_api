@@ -1,4 +1,4 @@
-import axios from 'lib/axios';
+import axios from '../../../lib/axios';
 import { ValidateUserEmail,  getUrlParameter,  ValidateRegEx } from '../../../lib/utils.js';
 import { push } from 'react-router-redux';
 import { ValidateUserPassword } from '../../../lib/utils.js';

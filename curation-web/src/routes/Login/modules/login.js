@@ -10,7 +10,7 @@ import {
 import {
   browserHistory
 } from 'react-router';
-import axios from 'lib/axios';
+import axios from '../../../lib/axios';
 import config from '../../../config';
 import {
   ValidateUserEmail

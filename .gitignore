@@ -1,3 +1,5 @@
+curation-web/static/*
+
 ### OSX ###
 .DS_Store
 .AppleDouble
@@ -54,7 +56,10 @@ venv/*
 # User-uploaded media
 apps/media/
 
+
+
 # Hitch directory
 tests/.hitch
 
 .env
+

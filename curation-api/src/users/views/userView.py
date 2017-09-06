@@ -234,7 +234,6 @@ class UserViewSet(mixins.RetrieveModelMixin,
 
     @transaction.atomic
     def destroy(self, request, pk=None):
-        print('$&^(*&(@*$&%(*&$%(*@$&%(*&$(*A&%*(')
         instance = self.get_object()
         loggedInUser = request.user
         if instance.id == loggedInUser.id:

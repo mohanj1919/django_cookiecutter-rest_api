@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './style.scss'
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-import {Button} from 'react-bootstrap';
+import {Button, InputGroup} from 'react-bootstrap';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 class ProjectsList extends Component {
@@ -45,12 +45,10 @@ class ProjectsList extends Component {
     }
     var customSearchField = (props) => {
       return (
-        <div className="input-group table-search-field pull-right">
-          <input type='text' placeholder='Search Projects' onKeyUp={this.props.SearchCohort}  className='form-control'/>
-          <span className="input-group-addon">
-            <i className="fa fa-search"></i>
-          </span>
-        </div>
+      <InputGroup className='input-group table-search-field pull-right table-search-box'>
+        <input type='text' placeholder='Search Projects' onKeyUp={this.props.SearchCohort}  className='form-control'/>
+        <InputGroup.Addon><i className='fa fa-search'></i></InputGroup.Addon>
+      </InputGroup>      
       );
     }
     var options = {

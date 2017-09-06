@@ -22,17 +22,16 @@ const EncounterMenuItems = (props) => {
     uniqueYears.map((uy, year) => {
       let childComp = []
       props.encountersData.map((ed, i) => {
-        let collapse = ed.collapse == 'show' ? true : ed.collapse == 'collapse' ? false : true
         if (new Date(ed.start).toLocaleDateString() == uy) {
           childComp.push(
             <div>
               <Panel header={<a><label>Encounter {ed.start ? new Date(ed.start).toLocaleDateString() : null}</label>
-                <span className='collapse-show-links'><a onClick={() => props.TogglingCollapse(ed.encounter_id, 'show') } className='enable-collapse-link'> Show all </a>
-                  |<a onClick={() => props.TogglingCollapse(ed.encounter_id, 'collapse') } className='enable-collapse-link'> Collapse all </a></span></a>}
+                <span className='collapse-show-links'><a onClick={() => props.TogglingCollapse(ed.id, 'show') } className='enable-collapse-link'> Show all </a>
+                  |<a onClick={() => props.TogglingCollapse(ed.id, 'collapse') } className='enable-collapse-link'> Collapse all </a></span></a>}
                 eventKey={i} className='individual-encounter-div' key={'encounter' + i}>
                 {Object.keys(ed) && Object.keys(ed).length > 0 ? Object.keys(ed).map((section, index) => (
                   _.isArray(ed[section]) ? (
-                    <Collapsible key={section + index} trigger={<label>{capitalize(section) }</label>} open={collapse}>
+                    <Collapsible key={section + index} trigger={<label>{capitalize(section) }</label>} open={ed.collapse == 'show' ? true : ed.collapse == 'collapse' ? false : true}>
                       {ed[section] && ed[section].length > 0 ? ed[section].map((sec, ind) => (
                         <div className='row individual-sec'>
                           {Object.keys(sec).map((secdetails, secindex) => (
