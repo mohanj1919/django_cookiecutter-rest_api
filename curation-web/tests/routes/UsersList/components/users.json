@@ -1,0 +1,34 @@
+ [
+        {
+            "id": 9,
+            "email": "lohith.dhanakonda@ggktech.com",
+            "first_name": "lohith",
+            "last_name": "dhanakonda",
+            "mfa_type": "google",
+            "password_expiry_on": "2017-09-28T13:58:23.694163Z",
+            "phone_number": null,
+            "is_active": true,
+            "groups": [
+                {
+                    "id": 1,
+                    "name": "admin"
+                }
+            ]
+        },
+        {
+            "id": 14,
+            "email": "test1+1504018620743@ggktech.com",
+            "first_name": "Test",
+            "last_name": "Account",
+            "mfa_type": "google",
+            "password_expiry_on": null,
+            "phone_number": "+1906389286",
+            "is_active": false,
+            "groups": [
+                {
+                    "id": 1,
+                    "name": "admin"
+                }
+            ]
+        }
+    ]

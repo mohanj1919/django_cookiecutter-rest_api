@@ -68,19 +68,19 @@ describe('Login Route Actions', () => {
         const expectedActions = [
             { type: USER_LOG_IN, payload: true }
         ];
-        const store = mockStore({
-            Login: {
-                username: {
-                    value: ''
-                },
-                password: {
-                    value: ''
-                },
-                isValidInput: true
-            }
-        });
+    //     const store = mockStore({
+    //         Login: {
+    //             username: {
+    //                 value: ''
+    //             },
+    //             password: {
+    //                 value: ''
+    //             },
+    //             isValidInput: true
+    //         }
+    //     });
 
-    })
+    // })
     it('Testing Authenticate function', () => {
         const authenticatefunc = actionsCreators.Authenticate()
         expect(authenticatefunc).toBeA('function')
@@ -140,4 +140,5 @@ describe('Login Reducer', () => {
     it('should return the default state', () => {
         expect(loginReducer(undefined, {})).toEqual(initialState)
     })
+})
 })

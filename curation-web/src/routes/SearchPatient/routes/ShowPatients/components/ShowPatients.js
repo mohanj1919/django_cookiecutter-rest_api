@@ -37,7 +37,7 @@ class ShowPatients extends Component {
                     :
                     <div>
                         <Button bsStyle='link'
-                         onClick={()=>this.props.Unassign(row)}><i className='fa fa-times'></i> Unassign</Button>
+                         onClick={()=>this.props.Unassign(row)}>Unassign</Button>
                     </div> 
                     }
                 </div>

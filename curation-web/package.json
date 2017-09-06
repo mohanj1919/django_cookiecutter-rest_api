@@ -8,7 +8,7 @@
     "compile": "node build/scripts/compile",
     "build": "cross-env npm run compile",
     "start": "cross-env NODE_ENV=development node build/scripts/start",
-    "test": "mocha --reporter spec tests/testSetup.js \"tests/**/*.spec.js\" --watch",
+    "test": "mocha --reporter spec tests/testSetup.js \"tests/**/*.spec.js\"",
     "predeploy": "npm run build",
     "deploy": "node ./build/scripts/deploy.js",
     "test:watch": "npm test -- --watch",

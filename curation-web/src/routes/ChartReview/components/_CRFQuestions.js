@@ -62,7 +62,7 @@ export default class CRFQuestions extends Component {
                     onBlur={context.props.question_type_text.includes(q.question_type) ? (e) => context.props.handleEditEvent(e, q.id, q.question_id) : () => { } }
                     label={context.props.question_type_text.includes(q.question_type) ? '' : o}
                     defaultChecked={q.response.includes(_.trim(o.replace(/\n/g, " ").toLowerCase())) ? 'checked' : false}
-                    defaultValue={q.question_type != 'date' ? q.response : new Date(q.response[0]) }
+                    defaultValue={q.question_type != 'date' ? q.response : (q.response[0] ? new Date(q.response[0]) : new Date()) }
                     value={context.props.question_type_text.includes(q.question_type) ? q.question_type == 'text' ? null : q.response : o}
                     name={q.id} />
                 </div>

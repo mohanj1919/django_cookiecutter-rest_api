@@ -9,5 +9,3 @@ coverage
 package-lock.json
 .env
 *.lock
-
-static/*

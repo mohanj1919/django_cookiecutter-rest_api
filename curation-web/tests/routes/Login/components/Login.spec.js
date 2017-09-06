@@ -2,6 +2,8 @@ import React from 'react'
 import { default as Login } from '../../../../src/routes/Login/components/Login'
 import { default as AuthOne } from '../../../../src/routes/Login/components/_authOne'
 import { default as GoogleAuth } from '../../../../src/routes/Login/components/_googleAuth'
+import { default as ForgotPassword } from '../../../../src/routes/Login/components/_forgotPassword'
+import { default as ConfirmEmailSent } from '../../../../src/routes/Login/components/_confirmEmailSent'
 import { mount } from 'enzyme';
 import expect from 'expect'
 import sinon from 'sinon';
@@ -180,4 +182,30 @@ const wrapper = mount(<GoogleAuth
     })
 })
 
-// describe('')
+describe('Forgot Password component', () => {
+
+    let handleEvent = {}
+    let username = {
+        value : '',
+        validationState : '',
+        helpBlockText : ''
+    }
+
+    const wrapper = mount(<ForgotPassword
+    username = {username}
+    handleEvent = {handleEvent}
+
+    SendForgotPasswordLink= {function () {}}
+    />)
+
+})
+
+
+describe('ConfirmEmailSent component', () => {
+
+    const wrapper = mount(<ConfirmEmailSent
+        RedirectToLogin = {function () {}}
+    />)
+
+    
+})

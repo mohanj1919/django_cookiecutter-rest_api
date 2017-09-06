@@ -1,7 +1,7 @@
 import {
     FETCH_PATIENTS_ID,
     default as chartReviewReducer
-} from '../../../../src/routes/ChartReview/modules/chartReview'
+} from '../../../../src/routes/ChartReview/modules/ChartReview'
 import expect from 'expect'
 
 describe('(Redux Module) Chart Review', () => {

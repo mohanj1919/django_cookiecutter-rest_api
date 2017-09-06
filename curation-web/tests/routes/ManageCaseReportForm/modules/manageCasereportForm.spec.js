@@ -81,14 +81,14 @@ describe('Manage Case Report form actions', () => {
         expect(csSpy.calls.length).toEqual(1)
     })
 
-    it('Testing OnFileUpload function', () => {
-        let files = [new File([""], "filename.csv", { type: "text/plain", lastModified: new Date() })]
-        const OnFileUploadfunc = actionsCreators.OnFileUpload(files)
-        expect(OnFileUploadfunc).toBeA('function')
-        const dispatch = expect.createSpy()
-        OnFileUploadfunc(dispatch)
-        expect(dispatch).toHaveBeenCalledWith({ type: actions.FILE_SELECTED, payload: {} })
-    })
+    // it('Testing OnFileUpload function', () => {
+    //     let files = [new File([""], "filename.csv", { type: "text/plain", lastModified: new Date() })]
+    //     const OnFileUploadfunc = actionsCreators.OnFileUpload(files)
+    //     expect(OnFileUploadfunc).toBeA('function')
+    //     const dispatch = expect.createSpy()
+    //     OnFileUploadfunc(dispatch)
+    //     expect(dispatch).toHaveBeenCalledWith({ type: actions.FILE_SELECTED, payload: {} })
+    // })
 })
 
 describe('Manage case report form Reducer', () => {

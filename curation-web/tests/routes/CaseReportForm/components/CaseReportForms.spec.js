@@ -27,7 +27,7 @@ const wrapper = mount(<CaseReportForms
     page= {1}
     children = {chil}
     CrfData = {tableData}
-
+    ClearData={function() {}}
     OnPageChanged= {function() {}}
     SearchCRF= {function(arg) {}}
     GetCRFs= {function() {}}

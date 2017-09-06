@@ -129,49 +129,49 @@ const wrapper = mount(<ChartReview availableCRFS = {availableCRFS}
         })
     })
 
-    describe('the chart review page should render patient details', ()=>{
-        let patientSummaryComponent = wrapper.find('#patientSummary')
-        let encountersComponent = wrapper.find('.encounters-panel')
+    // describe('the chart review page should render patient details', ()=>{
+    //     let patientSummaryComponent = wrapper.find('#patientSummary')
+    //     let encountersComponent = wrapper.find('.encounters-panel')
         
-        it('should render Patient Summary as header for panel', () => {
-            expect(patientSummaryComponent.find('.panel-heading').text()).toEqual('Patient Summary')
-        })
+    //     it('should render Patient Summary as header for panel', () => {
+    //         expect(patientSummaryComponent.find('.panel-heading').text()).toEqual('Patient Summary')
+    //     })
 
-        it('should render all Summary details given', () => {
-            expect(patientSummaryComponent.find('.encounter-label').length).toEqual(11)
-        })
+    //     it('should render all Summary details given', () => {
+    //         expect(patientSummaryComponent.find('.encounter-label').length).toEqual(11)
+    //     })
         
-        it('should render all fields for given Patient Summary details', () => {
+    //     it('should render all fields for given Patient Summary details', () => {
 
-        })
+    //     })
 
-        it('should display all encounters given', ()=>{
-            expect(encountersComponent.find('#10/7/2015').length).toEqual(1)
-            expect(encountersComponent.find('.individual-encounter-div').length).toEqual(2)
-        })
+    //     it('should display all encounters given', ()=>{
+    //         expect(encountersComponent.find('#10/7/2015').length).toEqual(1)
+    //         expect(encountersComponent.find('.individual-encounter-div').length).toEqual(2)
+    //     })
 
-        it('should render all OBSERVATIONS for given encounter', ()=>{
-            encountersComponent.find('.individual-encounter-div').map((enc)=>{
-                let observations = enc.find('.individual-encounter-div').find('.individual-observation')
-                expect(observations.length).toEqual(2)
-            })
-        })
+    //     it('should render all OBSERVATIONS for given encounter', ()=>{
+    //         encountersComponent.find('.individual-encounter-div').map((enc)=>{
+    //             let observations = enc.find('.individual-encounter-div').find('.individual-observation')
+    //             expect(observations.length).toEqual(2)
+    //         })
+    //     })
 
-        it('should render all NOTES for given encounter', ()=>{
-            encountersComponent.find('.individual-encounter-div').map((enc)=>{
-                let domNotes = enc.find('.individual-encounter-div').find('.individual-note');
-                let note = staticPatientData.encounters[0].note[0];
+    //     it('should render all NOTES for given encounter', ()=>{
+    //         encountersComponent.find('.individual-encounter-div').map((enc)=>{
+    //             let domNotes = enc.find('.individual-encounter-div').find('.individual-note');
+    //             let note = staticPatientData.encounters[0].note[0];
 
-                expect(domNotes.length).toEqual(1)
-                expect(domNotes.find('.note-text').text()).toEqual(`Text: ${note.text}`)
-            })
-        })
+    //             expect(domNotes.length).toEqual(1)
+    //             expect(domNotes.find('.note-text').text()).toEqual(`Text: ${note.text}`)
+    //         })
+    //     })
 
-        it('should display RESULTS given', ()=>{
-            encountersComponent.find('.individual-result').map((res)=>{
+    //     it('should display RESULTS given', ()=>{
+    //         encountersComponent.find('.individual-result').map((res)=>{
                 
-            })
-        })
+    //         })
+    //     })
 
-    })
+    // })
 })
