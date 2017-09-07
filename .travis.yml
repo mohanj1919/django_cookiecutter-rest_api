@@ -61,7 +61,8 @@ before_install:
 install:
   - env > .env
   - cat .env.example >> .env
-  - docker-compose -f docker-compose-travis.yml build curation-web
+  - env
+  - docker-compose -f docker-compose-travis.yml build --no-cache curation-web
 
 
 script:
