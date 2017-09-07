@@ -25,7 +25,6 @@ services:
       dockerfile: ./Dockerfile
     command: npm run test && npm run build
     volumes:
-      - ./curation-web/:/app/
       - ./curation-web/static/:/app/static/
     env_file: .env
 
